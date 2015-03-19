@@ -1,0 +1,20 @@
+﻿<Window x:Class="miaSim.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:miaGame="clr-namespace:miaGame;assembly=miaGame"
+        Title="miaSim" Height="350" Width="525">
+    <Grid Name="mainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding Path=DisplayText, Mode=OneWay}" VerticalScrollBarVisibility="Auto"></TextBox>
+        <miaGame:GameCanvas  Grid.Column="1" Grid.Row="0" x:Name="gameCanvas" />
+        
+    </Grid>
+</Window>

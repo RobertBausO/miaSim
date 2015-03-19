@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaSim", "miaSim\miaSim.csproj", "{82DA4933-6F46-452F-9FB8-0CAC87C8BC55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaSim.Foundation", "miaSim.Foundation\miaSim.Foundation.csproj", "{FBA29631-61C8-480A-9251-F3F54ABF0D1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaSim.Plants", "miaSim.Plants\miaSim.Plants.csproj", "{7827138B-0525-4F8C-9BCC-D8E378411D60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaGame", "miaGame\miaGame.csproj", "{ADF61B6D-D3A8-436A-8C03-6F22F673ECB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaSim.Tools", "miaSim.Tools\miaSim.Tools.csproj", "{C0A68509-82EA-404A-BABF-503CEA43E922}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "miaSim.Test", "miaSim.Test\miaSim.Test.csproj", "{7491868D-548B-4881-B705-983B2B7C0097}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{82DA4933-6F46-452F-9FB8-0CAC87C8BC55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82DA4933-6F46-452F-9FB8-0CAC87C8BC55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82DA4933-6F46-452F-9FB8-0CAC87C8BC55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82DA4933-6F46-452F-9FB8-0CAC87C8BC55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBA29631-61C8-480A-9251-F3F54ABF0D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBA29631-61C8-480A-9251-F3F54ABF0D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBA29631-61C8-480A-9251-F3F54ABF0D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBA29631-61C8-480A-9251-F3F54ABF0D1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7827138B-0525-4F8C-9BCC-D8E378411D60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7827138B-0525-4F8C-9BCC-D8E378411D60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7827138B-0525-4F8C-9BCC-D8E378411D60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7827138B-0525-4F8C-9BCC-D8E378411D60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADF61B6D-D3A8-436A-8C03-6F22F673ECB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADF61B6D-D3A8-436A-8C03-6F22F673ECB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADF61B6D-D3A8-436A-8C03-6F22F673ECB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADF61B6D-D3A8-436A-8C03-6F22F673ECB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A68509-82EA-404A-BABF-503CEA43E922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A68509-82EA-404A-BABF-503CEA43E922}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A68509-82EA-404A-BABF-503CEA43E922}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A68509-82EA-404A-BABF-503CEA43E922}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7491868D-548B-4881-B705-983B2B7C0097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7491868D-548B-4881-B705-983B2B7C0097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7491868D-548B-4881-B705-983B2B7C0097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7491868D-548B-4881-B705-983B2B7C0097}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
