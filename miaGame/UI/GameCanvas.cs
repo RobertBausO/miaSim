@@ -4,7 +4,6 @@ using miaGame.Painter;
 using miaGame.Tools;
 using System.Windows.Controls;
 using miaSim.Foundation;
-using Timer = System.Timers.Timer;
 
 namespace miaGame
 {

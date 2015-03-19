@@ -18,7 +18,7 @@ namespace miaSim
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private const int NumberOfInitItems = 10;
-		private const int UpdateCycleInMs = 1000;
+		private const int UpdateCycleInMs = 500;
 
 		private GameCanvas mCanvas;
 
@@ -40,7 +40,6 @@ namespace miaSim
 			var list = new List<Func<IWorldItem>> { Tree.CreateRandomTree };
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.Start();
-
 			mCanvas.Init(mWorld, new Painter());
 
 			mTimer = new Timer(s => UpdateView(), null, UpdateCycleInMs, 0);
@@ -68,7 +67,7 @@ namespace miaSim
 		private void UpdateView()
 		{
 			UpdateDisplayText();
-			//mCanvas.Update();
+			mCanvas.Update();
 		}
 
 		private void UpdateDisplayText()
