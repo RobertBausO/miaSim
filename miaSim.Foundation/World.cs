@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using miaGame.Tools;
 
@@ -121,7 +120,7 @@ namespace miaSim.Foundation
 			    }
 
 				 //Debug.WriteLine("Duration of one cylce: " + start.ElapsedTicks);
-				 Thread.Sleep(100);
+				 Thread.Sleep(10);
 
 		    } while (true);
 	    }

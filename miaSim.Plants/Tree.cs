@@ -9,13 +9,16 @@ namespace miaSim.Plants
 		 private const float MaxExtension = 0.1f;
 	    private float mGrow = 0.0001f;
 
+	    private readonly Extension mMaxExtension;
+
 		 #endregion
 
 		 #region ================== Constructor/Destructor ===================
 
-		 public Tree(Location location, Extension extension)
-			 : base("Tree", location, extension)
+		 public Tree(Location location, Extension maxExtension)
+			 : base("Tree", location, new Extension(0.0f,0.0f))
 		 {
+			 mMaxExtension = maxExtension;
 		 }
 
 		 #endregion
@@ -27,10 +30,10 @@ namespace miaSim.Plants
 
 	    public static IWorldItem CreateRandomTree()
 	    {
-			 var item = new Tree(new Location(Utils.NextRandom(), Utils.NextRandom()),
-										new Extension(Utils.NextRandom(MaxExtension), Utils.NextRandom(MaxExtension)));
+		    var location = new Location(Utils.NextRandom(), Utils.NextRandom());
+		    var maxExtension = new Extension(Utils.NextRandom(MaxExtension), Utils.NextRandom(MaxExtension));
 
-		    return item;
+			 return new Tree(location, maxExtension);
 	    }
 
 	    public override void Update(double msSinceLastUpdate)
@@ -38,25 +41,10 @@ namespace miaSim.Plants
 		    Extension.Width += mGrow;
 		    Extension.Height += mGrow;
 
-			 if (Extension.Width > MaxExtension || Extension.Height > MaxExtension)
+			 if (Extension.Width > mMaxExtension.Width || Extension.Height > mMaxExtension.Height)
 		    {
-			    mGrow = - mGrow;
+			    mGrow = 0;
 		    }
-
-			 if (Extension.Width < 0)
-			 {
-				 Extension.Width = 0;
-			 }
-
-		    if (Extension.Height < 0)
-		    {
-			    Extension.Height = 0;
-		    }
-	    }
-
-	    public override string GetDisplayText()
-	    {
-		    return base.GetDisplayText();
 	    }
 
 	    #endregion

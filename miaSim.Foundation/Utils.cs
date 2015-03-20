@@ -20,7 +20,7 @@ namespace miaSim.Foundation
 
 		#region ================== Methods ==================================
 
-		public static string Float2String(float value)
+		public static string Double2String(double value)
 		{
 			return value.ToString("0.000");
 		}

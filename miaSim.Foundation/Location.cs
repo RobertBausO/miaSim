@@ -9,7 +9,7 @@
 		{
 		}
 
-		public Location(float x, float y)
+		public Location(double x, double y)
 		{
 			X = x;
 			Y = y;
@@ -18,16 +18,16 @@
 		/// <summary>
 		/// x-position from 0 to 1
 		/// </summary>
-		public float X { get; set; }
+		public double X { get; set; }
 
 		/// <summary>
 		/// y-position from 0 to 1
 		/// </summary>
-		public float Y { get; set; }
+		public double Y { get; set; }
 
 		public override string ToString()
 		{
-			return string.Format("L({0} {1})", Utils.Float2String(X), Utils.Float2String(Y));
+			return string.Format("L({0} {1})", Utils.Double2String(X), Utils.Double2String(Y));
 		}
 	}
 }

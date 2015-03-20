@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace miaGame.Painter
 {
@@ -19,25 +20,22 @@ namespace miaGame.Painter
 		Big
 	}
 
-	public class PainterHelper
+	public class ObjectPainterHelper
 	{
 		#region ================== Member variables =========================
 
 		private const int TextZIndex = 30000;
 
 		private IBitmapCache mBitmapCache;
-		private Dictionary<string, object> mId2Object = new Dictionary<string, object>();
 
 		// draw info
 		private int mZIndex;
-		private Dictionary<string, object> mId2DrawnObject;
-
 
 		#endregion
 
 		#region ================== Constructor/Destructor ===================
 
-		public PainterHelper(IBitmapCache bitmapCache)
+		public ObjectPainterHelper(IBitmapCache bitmapCache)
 		{
 			mBitmapCache = bitmapCache;
 		}
@@ -49,56 +47,27 @@ namespace miaGame.Painter
 
 		#region ================== Methods ==================================
 
-		public void StartDrawing()
+		public void StartDrawing(PaintInfo info)
 		{
 			mZIndex = 0;
-			mId2DrawnObject = new Dictionary<string, object>();
+			info.Canvas.BeginInit();
+			//info.Canvas.Children.Clear();
 		}
 
 		public void EndDrawing(PaintInfo info)
 		{
-			// remove all objects, which are no longer existing
-			RemoveUndrawnObjects(info);
-		}
-
-		private void RemoveUndrawnObjects(PaintInfo info)
-		{
-			var listToRemove = new List<UIElement>();
-			foreach (var child in info.Canvas.Children)
-			{
-				var image = child as Image;
-				if (image != null)
-				{
-					if (!mId2DrawnObject.ContainsKey(image.Tag.ToString()))
-					{
-						listToRemove.Add(image);
-					}
-				}
-			}
-
-			foreach (var childToRemove in listToRemove)
-			{
-				info.Canvas.Children.Remove(childToRemove);
-			}
+			info.Canvas.EndInit();
 		}
 
 		public void DrawImage(string id, double sizeXee, double sizeYps, string name, double angle, double posXee, double posYps, PaintInfo info)
 		{
 			Image image;
 
-			if (!mId2Object.ContainsKey(id))
-			{
-				image = new Image();
-				image.Tag = id;
-				image.Stretch = Stretch.Fill;
+			image = new Image();
+			image.Tag = id;
+			image.Stretch = Stretch.Fill;
 
-				mId2Object.Add(id, image);
-				info.Canvas.Children.Add(image);
-			}
-			else
-			{
-				image = mId2Object[id] as Image;
-			}
+			info.Canvas.Children.Add(image);
 
 			image.Source = mBitmapCache.Get(name);
 
@@ -116,9 +85,24 @@ namespace miaGame.Painter
 			Canvas.SetZIndex(image, mZIndex++);
 			Canvas.SetLeft(image, info.World2ScreenXee(posXee - (sizeXee / 2)));
 			Canvas.SetTop(image, info.World2ScreenYps(posYps - sizeYps / 2));
+		}
 
-			// register as drawn
-			mId2DrawnObject.Add(id, image);
+		public void DrawEllipse(string id, double sizeXee, double sizeYps, double posXee, double posYps, PaintInfo info)
+		{
+			var ellipse = new Ellipse
+			{
+				Tag = id, 
+				Fill = Brushes.Black
+			};
+
+			info.Canvas.Children.Add(ellipse);
+
+			ellipse.Width = info.World2ScreenXee(sizeXee);
+			ellipse.Height = info.World2ScreenYps(sizeYps);
+
+			Canvas.SetZIndex(ellipse, mZIndex++);
+			Canvas.SetLeft(ellipse, info.World2ScreenXee(posXee - (sizeXee / 2)));
+			Canvas.SetTop(ellipse, info.World2ScreenYps(posYps - sizeYps / 2));
 		}
 
 

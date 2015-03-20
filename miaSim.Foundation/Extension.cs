@@ -9,7 +9,7 @@
 		{
 		}
 
-		public Extension(float width, float height)
+		public Extension(double width, double height)
 		{
 			Width = width;
 			Height = height;
@@ -18,16 +18,16 @@
 		/// <summary>
 		/// x-position from 0 to 1
 		/// </summary>
-		public float Width { get; set; }
+		public double Width { get; set; }
 
 		/// <summary>
 		/// y-position from 0 to 1
 		/// </summary>
-		public float Height { get; set; }
+		public double Height { get; set; }
 
 		public override string ToString()
 		{
-			return string.Format("E({0} {1})", Utils.Float2String(Width), Utils.Float2String(Height));
+			return string.Format("E({0} {1})", Utils.Double2String(Width), Utils.Double2String(Height));
 		}
 
 	}
