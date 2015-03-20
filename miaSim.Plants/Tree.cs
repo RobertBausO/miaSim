@@ -43,7 +43,12 @@ namespace miaSim.Plants
 
 			 if (Extension.Width > mMaxExtension.Width || Extension.Height > mMaxExtension.Height)
 		    {
-			    mGrow = 0;
+			    mGrow = - mGrow;
+		    }
+
+		    if (Extension.Width < 0.0 || Extension.Height < 0.0)
+		    {
+			    mGrow = - mGrow;
 		    }
 	    }
 

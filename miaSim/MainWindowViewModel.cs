@@ -17,13 +17,16 @@ namespace miaSim
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private const int NumberOfInitItems = 10;
-		private const int UpdateCycleInMs = 500;
+		private const int NumberOfInitItems = 100;
 
-		private GameCanvas mCanvas;
+		private readonly GameCanvas mCanvas;
 
 		private string mDisplayText;
+		private double mWorldThrottleInMs;
+		private double mUpdateCycleInMs;
+
 		private readonly World mWorld;
+		private int mCylceCount;
 
 		private readonly Timer mTimer;
 
@@ -35,14 +38,21 @@ namespace miaSim
 		{
 			DisplayText = "Init ...";
 
+			WorldThrottleInMs = 10;
+			UpdateCycleInMs = 50;
+
 			mCanvas = canvas;
 
 			var list = new List<Func<IWorldItem>> { Tree.CreateRandomTree };
 			mWorld = World.Create(NumberOfInitItems, list);
+			mWorld.UpdateDone += OnWorldUpdateDone;
+			mCylceCount = 0;
+
+
 			mWorld.Start();
 			mCanvas.Init(mWorld, new Painter());
 
-			mTimer = new Timer(s => UpdateView(), null, UpdateCycleInMs, 0);
+			mTimer = new Timer(s => UpdateView(), null, (int)UpdateCycleInMs, 0);
 		}
 
 		#endregion
@@ -60,9 +70,43 @@ namespace miaSim
 			}
 		}
 
+		public double WorldThrottleInMs
+		{
+			get { return mWorldThrottleInMs; }
+
+			set
+			{
+				if (value == mWorldThrottleInMs) return;
+				mWorldThrottleInMs = value;
+				OnPropertyChanged();
+			}
+
+		}
+
+		public double UpdateCycleInMs
+		{
+			get { return mUpdateCycleInMs; }
+
+			set
+			{
+				if (value == mUpdateCycleInMs) return;
+				mUpdateCycleInMs = value;
+				OnPropertyChanged();
+			}
+
+		}
+
+
 		#endregion
 
 		#region ================== Methods ==================================
+
+		void OnWorldUpdateDone(World obj)
+		{
+			mCylceCount++;
+			if ((int)WorldThrottleInMs > 0)
+				Thread.Sleep((int)WorldThrottleInMs);
+		}
 
 		private void UpdateView()
 		{
@@ -74,20 +118,24 @@ namespace miaSim
 		{
 			var text = new StringBuilder();
 
-			text.Append("LoopsPerSecond = " + mWorld.LoopsPerSecond);
+			text.Append("Cycles = " + mCylceCount);
+			text.Append(Environment.NewLine);
+			text.Append("WorldThrottleInMs = " + (int)WorldThrottleInMs);
+			text.Append(Environment.NewLine);
+			text.Append("UpdateCycleInMs = " + (int)UpdateCycleInMs);
 			text.Append(Environment.NewLine);
 
-			var list = mWorld.GetSnapshotOfItems();
+			//var list = mWorld.GetSnapshotOfItems();
 
-			foreach (var item in list)
-			{
-				text.Append(item.GetDisplayText());
-				text.Append(Environment.NewLine);
-			}
+			//foreach (var item in list)
+			//{
+			//	text.Append(item.GetDisplayText());
+			//	text.Append(Environment.NewLine);
+			//}
 
 			DisplayText = text.ToString();
 
-			mTimer.Change(UpdateCycleInMs, 0);
+			mTimer.Change((int)UpdateCycleInMs, 0);
 		}
 
 		[NotifyPropertyChangedInvocator]

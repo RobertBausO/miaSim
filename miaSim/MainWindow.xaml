@@ -7,6 +7,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="25"/>
+            <ColumnDefinition Width="25"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -15,6 +17,9 @@
 
         <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding Path=DisplayText, Mode=OneWay}" VerticalScrollBarVisibility="Auto"></TextBox>
         <miaGame:GameCanvas  Grid.Column="1" Grid.Row="0" x:Name="gameCanvas" />
+
+        <Slider Grid.Column="2" Orientation="Vertical" ToolTip="Throttle world (ms)" Minimum="0" Maximum="1000" Value="{Binding Path=WorldThrottleInMs}"/>
+        <Slider Grid.Column="3" Orientation="Vertical" ToolTip="Update cylce (ms)" Minimum="0" Maximum="500" Value="{Binding Path=UpdateCycleInMs}"/>
         
     </Grid>
 </Window>

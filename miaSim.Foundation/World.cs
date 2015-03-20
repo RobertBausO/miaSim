@@ -9,6 +9,8 @@ namespace miaSim.Foundation
     {
 		 #region ================== Member variables =========================
 
+	    public event Action<World> UpdateDone;
+
 	    private readonly IList<IWorldItem> mWorldItems;
 		 private readonly object mWorldItemLock = new object();
 	    private Thread mWorker;
@@ -119,8 +121,10 @@ namespace miaSim.Foundation
 					 dictLastUpdate[item.Id] = now;
 			    }
 
-				 //Debug.WriteLine("Duration of one cylce: " + start.ElapsedTicks);
-				 Thread.Sleep(10);
+			    if (UpdateDone != null)
+			    {
+				    UpdateDone(this);
+			    }
 
 		    } while (true);
 	    }
