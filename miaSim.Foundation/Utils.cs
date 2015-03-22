@@ -25,12 +25,12 @@ namespace miaSim.Foundation
 			return value.ToString("0.000");
 		}
 
-		public static float NextRandom()
+		public static double NextRandom()
 		{
-			return (float) RandomInstance.Value.NextDouble();
+			return RandomInstance.Value.NextDouble();
 		}
 
-		public static float NextRandom(float max)
+		public static double NextRandom(double max)
 		{
 			return NextRandom() * max;
 		}

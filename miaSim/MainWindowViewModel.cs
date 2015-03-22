@@ -23,12 +23,10 @@ namespace miaSim
 
 		private string mDisplayText;
 		private double mWorldThrottleInMs;
-		private double mUpdateCycleInMs;
+		private double mUpdateViewEachXUpdate;
 
 		private readonly World mWorld;
 		private int mCylceCount;
-
-		private readonly Timer mTimer;
 
 		#endregion
 
@@ -39,7 +37,7 @@ namespace miaSim
 			DisplayText = "Init ...";
 
 			WorldThrottleInMs = 10;
-			UpdateCycleInMs = 50;
+			UpdateViewEachXUpdate = 5;
 
 			mCanvas = canvas;
 
@@ -47,12 +45,10 @@ namespace miaSim
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.UpdateDone += OnWorldUpdateDone;
 			mCylceCount = 0;
-
-
-			mWorld.Start();
 			mCanvas.Init(mWorld, new Painter());
 
-			mTimer = new Timer(s => UpdateView(), null, (int)UpdateCycleInMs, 0);
+			// Big bang
+			mWorld.Start();
 		}
 
 		#endregion
@@ -83,19 +79,18 @@ namespace miaSim
 
 		}
 
-		public double UpdateCycleInMs
+        public double UpdateViewEachXUpdate
 		{
-			get { return mUpdateCycleInMs; }
+			get { return mUpdateViewEachXUpdate; }
 
 			set
 			{
-				if (value == mUpdateCycleInMs) return;
-				mUpdateCycleInMs = value;
+				if (value == mUpdateViewEachXUpdate) return;
+				mUpdateViewEachXUpdate = value;
 				OnPropertyChanged();
 			}
 
 		}
-
 
 		#endregion
 
@@ -106,12 +101,11 @@ namespace miaSim
 			mCylceCount++;
 			if ((int)WorldThrottleInMs > 0)
 				Thread.Sleep((int)WorldThrottleInMs);
-		}
 
-		private void UpdateView()
-		{
-			UpdateDisplayText();
-			mCanvas.Update();
+            UpdateDisplayText();
+
+            if (mCylceCount % (int)UpdateViewEachXUpdate == 0)
+                mCanvas.Update();
 		}
 
 		private void UpdateDisplayText()
@@ -122,7 +116,7 @@ namespace miaSim
 			text.Append(Environment.NewLine);
 			text.Append("WorldThrottleInMs = " + (int)WorldThrottleInMs);
 			text.Append(Environment.NewLine);
-			text.Append("UpdateCycleInMs = " + (int)UpdateCycleInMs);
+			text.Append("UpdateCycleInMs = " + (int)UpdateViewEachXUpdate);
 			text.Append(Environment.NewLine);
 
 			//var list = mWorld.GetSnapshotOfItems();
@@ -134,8 +128,6 @@ namespace miaSim
 			//}
 
 			DisplayText = text.ToString();
-
-			mTimer.Change((int)UpdateCycleInMs, 0);
 		}
 
 		[NotifyPropertyChangedInvocator]

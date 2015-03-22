@@ -2,7 +2,7 @@
 
 namespace miaSim.Plants
 {
-	public class Tree : WorldItem
+	public class WabberTree : WorldItem
 	{
 		#region ================== Member variables =========================
 
@@ -16,8 +16,8 @@ namespace miaSim.Plants
 
 		#region ================== Constructor/Destructor ===================
 
-		public Tree(Location location, Extension maxExtension)
-			: base("Tree", location, new Extension(0.0f, 0.0f))
+		public WabberTree(Location location, Extension maxExtension)
+			: base("WabberTree", location, new Extension(0.0f, 0.0f))
 		{
 			mMaxExtension = maxExtension;
 		}

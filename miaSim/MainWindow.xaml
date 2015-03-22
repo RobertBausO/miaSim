@@ -19,7 +19,7 @@
         <miaGame:GameCanvas  Grid.Column="1" Grid.Row="0" x:Name="gameCanvas" />
 
         <Slider Grid.Column="2" Orientation="Vertical" ToolTip="Throttle world (ms)" Minimum="0" Maximum="1000" Value="{Binding Path=WorldThrottleInMs}"/>
-        <Slider Grid.Column="3" Orientation="Vertical" ToolTip="Update cylce (ms)" Minimum="0" Maximum="500" Value="{Binding Path=UpdateCycleInMs}"/>
+        <Slider Grid.Column="3" Orientation="Vertical" ToolTip="UpdateView each x-cylce" Minimum="1" Maximum="100" Value="{Binding Path=UpdateViewEachXUpdate}"/>
         
     </Grid>
 </Window>
