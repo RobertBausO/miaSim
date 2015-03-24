@@ -17,11 +17,10 @@ namespace miaSim
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private const int NumberOfInitItems = 100;
+		private const int NumberOfInitItems = 600;
 
 		private readonly GameCanvas mCanvas;
 
-		private string mDisplayText;
 		private double mWorldThrottleInMs;
 		private double mUpdateViewEachXUpdate;
 
@@ -34,14 +33,12 @@ namespace miaSim
 
 		public MainWindowViewModel(GameCanvas canvas)
 		{
-			DisplayText = "Init ...";
-
-			WorldThrottleInMs = 10;
+			WorldThrottleInMs = 0;
 			UpdateViewEachXUpdate = 5;
 
 			mCanvas = canvas;
 
-			var list = new List<Func<IWorldItem>> { Tree.CreateRandomTree };
+			var list = new List<Func<IWorldItemIteraction, IWorldItem>> { WabberTree.CreateRandomTree };
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.UpdateDone += OnWorldUpdateDone;
 			mCylceCount = 0;
@@ -54,17 +51,6 @@ namespace miaSim
 		#endregion
 
 		#region ================== Properties ===============================
-
-		public string DisplayText
-		{
-			get { return mDisplayText; }
-			set
-			{
-				if (value == mDisplayText) return;
-				mDisplayText = value;
-				OnPropertyChanged();
-			}
-		}
 
 		public double WorldThrottleInMs
 		{
@@ -102,32 +88,20 @@ namespace miaSim
 			if ((int)WorldThrottleInMs > 0)
 				Thread.Sleep((int)WorldThrottleInMs);
 
-            UpdateDisplayText();
+			if (mCylceCount%(int) UpdateViewEachXUpdate == 0)
+			{
+				var text = new StringBuilder();
+				text.Append("WorldUpdateCycles = " + mCylceCount);
+				text.Append(Environment.NewLine);
+				text.Append("WorldUpdatesPerSecond = " + Utils.Double2String(obj.LoopsPerSecond));
+				text.Append(Environment.NewLine);
+				text.Append("WorldThrottleInMs = " + (int)WorldThrottleInMs);
+				text.Append(Environment.NewLine);
+				text.Append("DispalyUpdate every x-Update = " + (int)UpdateViewEachXUpdate);
+				text.Append(Environment.NewLine);
 
-            if (mCylceCount % (int)UpdateViewEachXUpdate == 0)
-                mCanvas.Update();
-		}
-
-		private void UpdateDisplayText()
-		{
-			var text = new StringBuilder();
-
-			text.Append("Cycles = " + mCylceCount);
-			text.Append(Environment.NewLine);
-			text.Append("WorldThrottleInMs = " + (int)WorldThrottleInMs);
-			text.Append(Environment.NewLine);
-			text.Append("UpdateCycleInMs = " + (int)UpdateViewEachXUpdate);
-			text.Append(Environment.NewLine);
-
-			//var list = mWorld.GetSnapshotOfItems();
-
-			//foreach (var item in list)
-			//{
-			//	text.Append(item.GetDisplayText());
-			//	text.Append(Environment.NewLine);
-			//}
-
-			DisplayText = text.ToString();
+				mCanvas.Update(text.ToString());
+			}
 		}
 
 		[NotifyPropertyChangedInvocator]

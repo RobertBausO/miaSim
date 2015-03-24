@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 using miaGame.Painter;
 using miaSim.Foundation;
@@ -15,24 +14,24 @@ namespace miaSim
 			mHelper = new DirectPainterHelper();
 		}
 
-		public void Draw(IWorld igame, string debug, double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
+		public void Draw(IWorld iworld, string text, double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
 		{
-			var info = new PaintInfo(1.0, 1.0, screenWidth, screenHeight, canvas, context);
+			var world = iworld as World;
+			if (world == null) return;
 
-			DrawWorld(igame as World, info);
-
-			//
-			// Add HID
-			//
-			//mHelper.DrawText("Info!", TextPosition.RightCorner, TextSize.Medium, Brushes.Black, info);
-			mHelper.DrawText("Debug info" + Environment.NewLine + debug, TextPosition.LeftCorner, TextSize.Medium, Brushes.Black, info);
+			lock (world.UpdateLock)
+			{
+				var info = new PaintInfo(1.0, 1.0, screenWidth, screenHeight, canvas, context);
+				DrawWorld(iworld as World, info);
+				mHelper.DrawText(text, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
+			}
 		}
 
 		private void DrawWorld(World world, PaintInfo info)
 		{
-			foreach (var item in world.GetSnapshotOfItems())
+			foreach (var item in world.Items)
 			{
-				mHelper.DrawEllipse(Brushes.Black, item.Location.X, item.Location.Y, item.Extension.Width, item.Extension.Height, info);
+				mHelper.DrawRectangle(Brushes.Black, item.Location, item.Extension, info);
 			}
 		}
 	}

@@ -18,6 +18,8 @@ namespace miaGame
 		private readonly StopwatchStatistic mDrawGameStatistic;
 		private double mFps = double.MaxValue;
 
+		private string mAdditionalText;
+
 		private long mCounter = 0;
 
 		#endregion
@@ -51,9 +53,11 @@ namespace miaGame
 			mPainter = painter;
 		}
 
-		public void Update()
+		public void Update(string additionalText)
 		{
 			mDrawGameStatistic.MeasurePoint();
+
+			mAdditionalText = additionalText;
 			Dispatcher.BeginInvoke(new Action(InvalidateVisual), DispatcherPriority.Input, null);
 		}
 
@@ -61,8 +65,8 @@ namespace miaGame
 		{
 			if (mWorld != null && mPainter != null)
 			{
-				var text = "FPS=" + mFps.ToString("0.00");
-				text += ";" + mCounter++;
+				var text = "FPS=" + mFps.ToString("0.00") + ";" + mCounter++ + Environment.NewLine;
+				text += mAdditionalText;
 
 				mPainter.Draw(mWorld, text, ActualWidth, ActualHeight, this, dc);
 			}

@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using miaSim.Foundation;
 
 namespace miaGame.Painter
 {
@@ -96,6 +97,12 @@ namespace miaGame.Painter
 			info.Context.DrawEllipse(brush, new Pen(), 
 				new Point(info.World2ScreenXee(posXee), info.World2ScreenYps(posYps)), 
 				info.World2ScreenXee(sizeXee), info.World2ScreenYps(sizeYps));
+		}
+
+		public void DrawRectangle(Brush brush, Location location, Extension extension, PaintInfo info)
+		{
+			var screenRect = info.World2Screen(Utils.LocationExtension2Rect(location, extension));
+			info.Context.DrawRectangle(brush, new Pen(), screenRect);
 		}
 	}
 }

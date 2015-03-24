@@ -5,130 +5,173 @@ using miaGame.Tools;
 
 namespace miaSim.Foundation
 {
-    public class World : IWorld
-    {
-		 #region ================== Member variables =========================
+	public class World : IWorld, IWorldItemIteraction
+	{
+		#region ================== Member variables =========================
 
-	    public event Action<World> UpdateDone;
+		public event Action<World> UpdateDone;
 
-	    private readonly IList<IWorldItem> mWorldItems;
-		 private readonly object mWorldItemLock = new object();
-	    private Thread mWorker;
-		 private readonly StopwatchStatistic mLoopStatistic;
+		private readonly List<IWorldItem> mWorldItems;
+		private readonly object mWorldItemLock = new object();
+		private Thread mWorker;
+		private readonly StopwatchStatistic mLoopStatistic;
 
-		 #endregion
+		private IntersectionMap mMap = new IntersectionMap(20);
 
-		 #region ================== Constructor/Destructor ===================
+		#endregion
 
-	    private World()
-	    {
-			 mWorldItems = new List<IWorldItem>();
+		#region ================== Constructor/Destructor ===================
 
-			 mLoopStatistic = new StopwatchStatistic(10, s =>
-			 {
-				 LoopsPerSecond = 1000.0 / mLoopStatistic.Average.TotalMilliseconds;
-			 });
+		private World()
+		{
+			UpdateLock = new object();
 
-			 LoopsPerSecond = 0.0;
-	    }
+			mWorldItems = new List<IWorldItem>();
 
-		 #endregion
+			mLoopStatistic = new StopwatchStatistic(10, s =>
+			{
+				LoopsPerSecond = 1000.0 / mLoopStatistic.Average.TotalMilliseconds;
+			});
 
-		 #region ================== Properties ===============================
+			LoopsPerSecond = 0.0;
+		}
 
-		 public double LoopsPerSecond { get; private set; }
+		#endregion
 
-		 #endregion
+		#region ================== Properties ===============================
 
-		 #region ================== Methods ==================================
+		public double LoopsPerSecond { get; private set; }
 
-	    public IList<IWorldItem> GetSnapshotOfItems()
-	    {
-		    IList<IWorldItem> newList;
+		#endregion
 
-		    lock (mWorldItemLock)
-		    {
-			    newList = new List<IWorldItem>(mWorldItems);
-		    }
+		#region ================== Methods ==================================
 
-		    return newList;
-	    }
+		/// <summary>
+		/// all items of the world
+		/// </summary>
+		public List<IWorldItem> Items { get { return mWorldItems; } }
 
-		 /// <summary>
-		 /// create a world (random)
-		 /// </summary>
-		 /// <returns></returns>
-	    public static World Create(int numberOfItems, IList<Func<IWorldItem>> factories)
-	    {
-		    var newWorld = new World();
+		/// <summary>
+		/// lock for sync with update of the world
+		/// </summary>
+		public object UpdateLock { get; private set; }
 
-		    for (int itemIdx = 0; itemIdx < numberOfItems; itemIdx++)
-		    {
-			    var itemTypeIndex = Utils.Next(0, factories.Count - 1);
-			    var item = factories[itemTypeIndex]();
+		/// <summary>
+		/// create a world (random)
+		/// </summary>
+		/// <returns></returns>
+		public static World Create(int numberOfItems, IList<Func<IWorldItemIteraction, IWorldItem>> factories)
+		{
+			var newWorld = new World();
 
-				 newWorld.AddItem(item);
-		    }
+			for (int itemIdx = 0; itemIdx < numberOfItems; itemIdx++)
+			{
+				var itemTypeIndex = Utils.Next(0, factories.Count - 1);
+				var item = factories[itemTypeIndex](newWorld);
 
-			 return newWorld;
-	    }
+				newWorld.AddItem(item);
+			}
 
-	    public void AddItem(IWorldItem newItem)
-	    {
-		    foreach (var item in mWorldItems)
-		    {
-			    var distance = item.CalcDistanceTo(newItem);
+			return newWorld;
+		}
 
-				 newItem.Connections.Add(new Connection(item, distance));
-				 item.Connections.Add(new Connection(newItem, distance));
-		    }
+		public void AddItem(IWorldItem newItem)
+		{
+			foreach (var item in mWorldItems)
+			{
+				var distance = item.CalcDistanceTo(newItem);
 
-			 mWorldItems.Add(newItem);
-	    }
+				newItem.Connections.Add(new Connection(item, distance));
+				item.Connections.Add(new Connection(newItem, distance));
+			}
 
-	    public void Start()
-	    {
-			 mWorker = new Thread(WorkLoop) {IsBackground = true};
-		    mWorker.Start();
-	    }
+			mWorldItems.Add(newItem);
+		}
 
-	    private void WorkLoop()
-	    {
-		    var dictLastUpdate = new Dictionary<long, DateTime>();
+		public void Start()
+		{
+			mWorker = new Thread(WorkLoop) { IsBackground = true };
+			mWorker.Start();
+		}
 
-		    do
-		    {
-				 mLoopStatistic.MeasurePoint();
+		private void WorkLoop()
+		{
+			var dictLastUpdate = new Dictionary<long, DateTime>();
 
-				 var items = GetSnapshotOfItems();
+			Items.ForEach(i => mMap.Add(i));
 
-			    foreach (var item in items)
-			    {
-					 var now = DateTime.Now;
+			do
+			{
+				mLoopStatistic.MeasurePoint();
 
-					 if (dictLastUpdate.ContainsKey(item.Id))
-				    {
-					    var lastUpdate = dictLastUpdate[item.Id];
-					    var diff = now.Subtract(lastUpdate);
+				var items = Items;
 
-						 item.Update(diff.TotalMilliseconds);
-				    }
-					 else
-					 {
-						 item.Update(0.0);
-					 }
+				lock (UpdateLock)
+				{
+					foreach (var item in items)
+					{
+						mMap.Remove(item);
 
-					 dictLastUpdate[item.Id] = now;
-			    }
+						var now = DateTime.Now;
 
-			    if (UpdateDone != null)
-			    {
-				    UpdateDone(this);
-			    }
+						if (dictLastUpdate.ContainsKey(item.Id))
+						{
+							var lastUpdate = dictLastUpdate[item.Id];
+							var diff = now.Subtract(lastUpdate);
 
-		    } while (true);
-	    }
+							item.Update(diff.TotalMilliseconds);
+						}
+						else
+						{
+							item.Update(0.0);
+						}
 
-		 #endregion
-    }
+						dictLastUpdate[item.Id] = now;
+						mMap.Add(item);
+					}
+				}
+
+				if (UpdateDone != null)
+				{
+					UpdateDone(this);
+				}
+
+			} while (true);
+		}
+
+
+		public IList<IWorldItem> GetIntersectItems(IWorldItem worldItem)
+		{
+			return GetIntersectItemsByMap(worldItem);
+			//return GetIntersectItemsDirect(worldItem);
+		}
+
+
+		public IList<IWorldItem> GetIntersectItemsByMap(IWorldItem worldItem)
+		{
+			return mMap.GetIntersects(worldItem);
+		}
+
+		public IList<IWorldItem> GetIntersectItemsDirect(IWorldItem worldItem)
+		{
+			var worldItemRect = Utils.LocationExtension2Rect(worldItem.Location, worldItem.Extension);
+			var list = new List<IWorldItem>();
+
+			foreach (var item in Items)
+			{
+				if (item.Id != worldItem.Id)
+				{
+					var itemRect = Utils.LocationExtension2Rect(item.Location, item.Extension);
+
+					if (worldItemRect.IntersectsWith(itemRect))
+						list.Add(item);
+				}
+			}
+
+			return list;
+		}
+
+		#endregion
+
+	}
 }

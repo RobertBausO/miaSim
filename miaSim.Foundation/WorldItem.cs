@@ -14,12 +14,14 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		protected WorldItem(string type, Location location, Extension extension)
+		protected WorldItem(IWorldItemIteraction worldInteraction, string type, Location location, Extension extension)
 		{
 			lock (NextIdLock)
 			{
 				Id = mNextId++;
 			}
+
+			WorldInteraction = worldInteraction;
 
 			Type = type;
 			Location = location;
@@ -31,6 +33,8 @@ namespace miaSim.Foundation
 		#endregion
 
 		#region ================== Properties ===============================
+
+		public IWorldItemIteraction WorldInteraction { get; private set; }
 
 		public string Type { get; private set; }
 		public long Id { get; private set; }
