@@ -45,11 +45,33 @@ namespace miaSim.Foundation
 
 		public IList<IWorldItem> GetIntersects(IWorldItem item)
 		{
-			var candidates = new Dictionary<long, IWorldItem>();
-
+			var list = new List<IWorldItem>();
 			var worldRect = Utils.LocationExtension2Rect(item.Location, item.Extension);
 			var mapRect = World2Map(worldRect);
-			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top + 1)), 
+
+			// find intersections
+			//var candidates = GetCandidatesByOutbound(mapRect);
+			var candidates = GetCandidatesByFullScan(mapRect);
+
+			foreach (var candidate in candidates.Values)
+			{
+				if (candidate.Id != item.Id)
+				{
+					var candidateRect = Utils.LocationExtension2Rect(candidate.Location, candidate.Extension);
+
+					if (candidateRect.IntersectsWith(worldRect))
+						list.Add(item);
+				}
+			}
+
+			return list;
+		}
+
+		private Dictionary<long, IWorldItem> GetCandidatesByOutbound(Rect mapRect)
+		{
+			var candidates = new Dictionary<long, IWorldItem>();
+
+			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top + 1)),
 				new Point(Adjust((int)mapRect.Right + 1), Adjust((int)mapRect.Bottom - 1)));
 
 			// scan the outbound line of the rect
@@ -67,22 +89,25 @@ namespace miaSim.Foundation
 			// bottom
 			ForEachMapEntry(new Rect(new Point(outboundRect.Left, outboundRect.Bottom), new Point(outboundRect.Right, outboundRect.Bottom)), action);
 
-			// find intersections
-			var list = new List<IWorldItem>();
-
-			foreach (var candidate in candidates.Values)
-			{
-				if (candidate.Id != item.Id)
-				{
-					var candidateRect = Utils.LocationExtension2Rect(candidate.Location, candidate.Extension);
-
-					if (candidateRect.IntersectsWith(worldRect))
-						list.Add(item);
-				}
-			}
-
-			return list;
+			return candidates;
 		}
+
+		private Dictionary<long, IWorldItem> GetCandidatesByFullScan(Rect mapRect)
+		{
+			var candidates = new Dictionary<long, IWorldItem>();
+
+			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top - 1)),
+				new Point(Adjust((int)mapRect.Right + 1), Adjust((int)mapRect.Bottom + 1)));
+
+			// scan the outbound line of the rect
+			var action = new Action<Dictionary<long, IWorldItem>>(dict => MergeDictionaries(candidates, dict));
+
+			// full scan
+			ForEachMapEntry(outboundRect, action);
+
+			return candidates;
+		}
+
 
 		private static void MergeDictionaries(Dictionary<long, IWorldItem> baseDict, Dictionary<long, IWorldItem> toBeAdded)
 		{
@@ -106,9 +131,12 @@ namespace miaSim.Foundation
 
 		private void ForEachMapEntry(Rect mapRect, Action<Dictionary<long, IWorldItem>> toDo)
 		{
+
+
+
 			for (var x = (int)mapRect.Left; x <= (int)mapRect.Right; x++)
 			{
-				for (var y = (int)mapRect.Bottom; y <= (int)mapRect.Top; y++)
+				for (var y = (int)mapRect.Top; y <= (int)mapRect.Bottom; y++)
 				{
 					if (mData[x, y] == null)
 					{
