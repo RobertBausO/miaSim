@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace miaSim.Foundation
 {
@@ -7,13 +8,10 @@ namespace miaSim.Foundation
 		string Type { get; }
 		long Id { get;  }
 
-		Location Location { get;  }
-		Extension Extension { get; }
+		Rect Position { get;  }
 
 		void Update(double msSinceLastUpdate);
 		string GetDisplayText();
-
-		double CalcDistanceTo(IWorldItem item);
 
 		IList<Connection> Connections { get; }
 	}

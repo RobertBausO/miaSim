@@ -1,5 +1,6 @@
 ﻿using System;
 using miaSim.Foundation;
+using System.Windows;
 
 namespace miaSim.Plants
 {
@@ -8,20 +9,24 @@ namespace miaSim.Plants
 		#region ================== Member variables =========================
 
 		private const double MinExtension = 0.01;
-		private const double MaxExtension = 0.1;
+		private const double MaxExtension = 0.05;
+
 		private double mWidthGrow = 0.0001f;
 		private double mHeightGrow = 0.0001f;
 
-		private readonly Extension mMaxExtension;
+		private readonly double mMaxWidthExtension;
+		private readonly double mMaxHeightExtension;
 
 		#endregion
 
 		#region ================== Constructor/Destructor ===================
 
-		public WabberTree(IWorldItemIteraction interaction, Location location, Extension maxExtension)
-			: base(interaction, "WabberTree", location, new Extension(0.0f, 0.0f))
+		public WabberTree(IWorldItemIteraction interaction, Rect position, 
+							double maxWidthExtension, double maxHeightExtension)
+			: base(interaction, "WabberTree", position)
 		{
-			mMaxExtension = maxExtension;
+			mMaxWidthExtension = maxWidthExtension;
+			mMaxHeightExtension = maxHeightExtension;
 		}
 
 		#endregion
@@ -33,21 +38,20 @@ namespace miaSim.Plants
 
 		public static IWorldItem CreateRandomTree(IWorldItemIteraction interaction)
 		{
-			var location = new Location(Utils.NextRandom(), Utils.NextRandom());
-			var maxExtension = new Extension(Utils.NextRandom(MaxExtension) + MinExtension, Utils.NextRandom(MaxExtension) + MinExtension);
+			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(MinExtension, MinExtension));
 
-			return new WabberTree(interaction, location, maxExtension);
+			return new WabberTree(interaction, position, Utils.NextRandom(MaxExtension) + MinExtension, Utils.NextRandom(MaxExtension) + MinExtension);
 		}
 
 		public override void Update(double msSinceLastUpdate)
 		{
-			var newWidth = Extension.Width + mWidthGrow;
-			var newHeight = Extension.Height + mHeightGrow;
+			var newWidth = Position.Width + mWidthGrow;
+			var newHeight = Position.Height + mHeightGrow;
 
-			if (newWidth > mMaxExtension.Width)
+			if (newWidth > mMaxWidthExtension)
 			{
 				mWidthGrow = -mWidthGrow;
-				newWidth = mMaxExtension.Width;
+				newWidth = mMaxWidthExtension;
 			}
 
 			if (newWidth < 0)
@@ -56,10 +60,10 @@ namespace miaSim.Plants
 				newWidth = 0.0;
 			}
 
-			if (newHeight > mMaxExtension.Height)
+			if (newHeight > mMaxHeightExtension)
 			{
 				mHeightGrow = -mHeightGrow;
-				newHeight = mMaxExtension.Height;
+				newHeight = mMaxHeightExtension;
 			}
 
 			if (newHeight < 0)
@@ -68,18 +72,17 @@ namespace miaSim.Plants
 				newHeight = 0.0;
 			}
 
-			var oldWidth = Extension.Width;
-			var oldHeight = Extension.Height;
+			var oldWidth = Position.Width;
+			var oldHeight = Position.Height;
 
-			Extension.Width = newWidth;
-			Extension.Height = newHeight;
+			Position = new Rect(Position.Location, new Size(newWidth, newHeight));
+
 
 			var intersects = WorldInteraction.GetIntersectItems(this);
 
 			if (intersects.Count > 0)
 			{
-				Extension.Width = oldWidth;
-				Extension.Height = oldHeight;
+				Position = new Rect(Position.Location, new Size(oldWidth, oldHeight));
 			}
 		}
 

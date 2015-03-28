@@ -46,7 +46,7 @@ namespace miaSim.Foundation
 		public IList<IWorldItem> GetIntersects(IWorldItem item)
 		{
 			var list = new List<IWorldItem>();
-			var worldRect = Utils.LocationExtension2Rect(item.Location, item.Extension);
+			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
 
 			// find intersections
@@ -57,7 +57,7 @@ namespace miaSim.Foundation
 			{
 				if (candidate.Id != item.Id)
 				{
-					var candidateRect = Utils.LocationExtension2Rect(candidate.Location, candidate.Extension);
+					var candidateRect = candidate.Position;
 
 					if (candidateRect.IntersectsWith(worldRect))
 						list.Add(item);
@@ -123,7 +123,7 @@ namespace miaSim.Foundation
 
 		private void ForEachMapEntry(IWorldItem item, Action<Dictionary<long, IWorldItem>> toDo)
 		{
-			var worldRect = Utils.LocationExtension2Rect(item.Location, item.Extension);
+			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
 
 			ForEachMapEntry(mapRect, toDo);
@@ -131,9 +131,6 @@ namespace miaSim.Foundation
 
 		private void ForEachMapEntry(Rect mapRect, Action<Dictionary<long, IWorldItem>> toDo)
 		{
-
-
-
 			for (var x = (int)mapRect.Left; x <= (int)mapRect.Right; x++)
 			{
 				for (var y = (int)mapRect.Top; y <= (int)mapRect.Bottom; y++)

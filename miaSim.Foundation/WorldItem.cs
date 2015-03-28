@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace miaSim.Foundation
 {
@@ -14,7 +15,7 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		protected WorldItem(IWorldItemIteraction worldInteraction, string type, Location location, Extension extension)
+		protected WorldItem(IWorldItemIteraction worldInteraction, string type, Rect position)
 		{
 			lock (NextIdLock)
 			{
@@ -24,8 +25,7 @@ namespace miaSim.Foundation
 			WorldInteraction = worldInteraction;
 
 			Type = type;
-			Location = location;
-			Extension = extension;
+			Position = position;
 
 			Connections = new List<Connection>();
 		}
@@ -39,8 +39,7 @@ namespace miaSim.Foundation
 		public string Type { get; private set; }
 		public long Id { get; private set; }
 
-		public Location Location { get; private set; }
-		public Extension Extension { get; private set; }
+		public Rect Position { get; set; }
 
 		public IList<Connection> Connections { get; private set; }
 
@@ -50,17 +49,10 @@ namespace miaSim.Foundation
 
 		public abstract void Update(double msSinceLastUpdate);
 
-		public double CalcDistanceTo(IWorldItem item)
-		{
-			var xDistance = item.Location.X - Location.X;
-			var yDistance = item.Location.Y - Location.Y;
-
-			return Math.Sqrt(xDistance*xDistance + yDistance*yDistance);
-		}
-
 		public virtual string GetDisplayText()
 		{
-			return string.Format("{0}-{3}:{1}:{2}", Id, Location, Extension, Type);
+			var position = string.Format("{0},{1},{2},{3}", Position.Left, Position.Top, Position.Right, Position.Bottom);
+			return string.Format("{0}-{1}:{2}", Id, Type, position);
 		}
 
 		#endregion

@@ -77,13 +77,13 @@ namespace miaSim.Foundation
 
 		public void AddItem(IWorldItem newItem)
 		{
-			foreach (var item in mWorldItems)
-			{
-				var distance = item.CalcDistanceTo(newItem);
+			//foreach (var item in mWorldItems)
+			//{
+			//	var distance = item.CalcDistanceTo(newItem);
 
-				newItem.Connections.Add(new Connection(item, distance));
-				item.Connections.Add(new Connection(newItem, distance));
-			}
+			//	newItem.Connections.Add(new Connection(item, distance));
+			//	item.Connections.Add(new Connection(newItem, distance));
+			//}
 
 			mWorldItems.Add(newItem);
 		}
@@ -154,14 +154,14 @@ namespace miaSim.Foundation
 
 		public IList<IWorldItem> GetIntersectItemsDirect(IWorldItem worldItem)
 		{
-			var worldItemRect = Utils.LocationExtension2Rect(worldItem.Location, worldItem.Extension);
+			var worldItemRect = worldItem.Position;
 			var list = new List<IWorldItem>();
 
 			foreach (var item in Items)
 			{
 				if (item.Id != worldItem.Id)
 				{
-					var itemRect = Utils.LocationExtension2Rect(item.Location, item.Extension);
+					var itemRect = item.Position;
 
 					if (worldItemRect.IntersectsWith(itemRect))
 						list.Add(item);

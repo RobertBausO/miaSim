@@ -31,7 +31,7 @@ namespace miaSim
 		{
 			foreach (var item in world.Items)
 			{
-				mHelper.DrawRectangle(Brushes.Black, item.Location, item.Extension, info);
+				mHelper.DrawRectangle(Brushes.Green, item.Position, info);
 			}
 		}
 	}

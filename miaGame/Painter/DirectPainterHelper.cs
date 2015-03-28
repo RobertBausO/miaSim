@@ -99,9 +99,9 @@ namespace miaGame.Painter
 				info.World2ScreenXee(sizeXee), info.World2ScreenYps(sizeYps));
 		}
 
-		public void DrawRectangle(Brush brush, Location location, Extension extension, PaintInfo info)
+		public void DrawRectangle(Brush brush, Rect worldRect, PaintInfo info)
 		{
-			var screenRect = info.World2Screen(Utils.LocationExtension2Rect(location, extension));
+			var screenRect = info.World2Screen(worldRect);
 			info.Context.DrawRectangle(brush, new Pen(), screenRect);
 		}
 	}

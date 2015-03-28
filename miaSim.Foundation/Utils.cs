@@ -21,16 +21,6 @@ namespace miaSim.Foundation
 
 		#region ================== Methods ==================================
 
-		public static Rect LocationExtension2Rect(Location location, Extension extension)
-		{
-			var left = location.X - extension.Width / 2.0;
-			var top = location.Y + extension.Height / 2.0;
-			var width = extension.Width;
-			var height = extension.Height;
-
-			return new Rect(left, top, width, height);
-		}
-
 		public static string Double2String(double value)
 		{
 			return value.ToString("0.000");
