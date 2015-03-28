@@ -49,6 +49,8 @@ namespace miaSim.Foundation
 
 		public abstract void Update(double msSinceLastUpdate);
 
+		//public abstract void Paint(PaintInfo paintInfo, DirectPainterHelper helper);
+
 		public void AdjustPosition()
 		{
 			var left = Position.Left;

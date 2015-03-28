@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="Connection.cs" />
     <Compile Include="IntersectionMap.cs" />
-    <Compile Include="IWorld.cs" />
     <Compile Include="IWorldItemIteraction.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WorldItem.cs" />

@@ -8,28 +8,26 @@ namespace miaSim
 	public class Painter : IPainter
 	{
 		private DirectPainterHelper mHelper;
+		private World mWorld;
 
-		public Painter()
+		public Painter(World world)
 		{
+			mWorld = world;
 			mHelper = new DirectPainterHelper();
 		}
 
-		public void Draw(IWorld iworld, string text, double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
+		public void Draw(double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
 		{
-			var world = iworld as World;
-			if (world == null) return;
+			var info = new PaintInfo(1.0, 1.0, screenWidth, screenHeight, canvas, context);
 
-			lock (world.UpdateLock)
-			{
-				var info = new PaintInfo(1.0, 1.0, screenWidth, screenHeight, canvas, context);
-				DrawWorld(iworld as World, info);
-				mHelper.DrawText(text, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
-			}
+			DrawWorldItems(info);
+
+			mHelper.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
 		}
 
-		private void DrawWorld(World world, PaintInfo info)
+		private void DrawWorldItems(PaintInfo info)
 		{
-			foreach (var item in world.Items)
+			foreach (var item in mWorld.Items)
 			{
 				mHelper.DrawRectangle(Brushes.Green, item.Position, info);
 			}

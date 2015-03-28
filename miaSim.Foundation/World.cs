@@ -5,7 +5,7 @@ using miaGame.Tools;
 
 namespace miaSim.Foundation
 {
-	public class World : IWorld, IWorldItemIteraction
+	public class World : IWorldItemIteraction
 	{
 		#region ================== Member variables =========================
 
@@ -41,6 +41,8 @@ namespace miaSim.Foundation
 		#region ================== Properties ===============================
 
 		public double LoopsPerSecond { get; private set; }
+
+		public string Info { get; set; }
 
 		#endregion
 

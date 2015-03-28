@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using miaSim.Foundation;
 
 namespace miaGame.Painter
 {
@@ -45,51 +44,6 @@ namespace miaGame.Painter
 
 				info.Context.DrawText(text, point);
 			}
-		}
-
-
-		public void DrawImage(BitmapImage image, double xee, double yps, double size, PaintInfo info)
-		{
-			var point = new System.Windows.Point(info.World2ScreenXee(xee - size / 2), info.World2ScreenYps(yps - size / 2));
-			var dimension = new System.Windows.Size(info.World2ScreenXee(size), info.World2ScreenYps(size));
-
-			info.Context.DrawImage(image, new System.Windows.Rect(point, dimension));
-		}
-
-		public void DrawImage(BitmapImage image, double xee, double yps, double size, double angle, PaintInfo info)
-		{
-			Image imageControl = new Image();
-			imageControl.Source = image;
-			imageControl.Stretch = Stretch.Fill;
-
-			imageControl.Width = info.World2ScreenXee(size);
-			imageControl.Height = info.World2ScreenYps(size);
-
-			Canvas.SetLeft(imageControl, info.World2ScreenXee(size) / 2);
-			Canvas.SetTop(imageControl, info.World2ScreenYps(size) / 2);
-
-			RotateTransform trans = new RotateTransform(angle, info.World2ScreenXee(size / 2), info.World2ScreenYps(size / 2));
-			imageControl.RenderTransform = trans;
-
-			Canvas container = new Canvas();
-			container.Children.Add(imageControl);
-			container.Arrange(new Rect(0, 0, info.ScreenSizeXee, info.ScreenSizeYps));
-
-			// render the result to a new bitmap. 
-			RenderTargetBitmap target = new RenderTargetBitmap(
-				 (int)info.World2ScreenXee(size) * 2,
-				 (int)info.World2ScreenYps(size) * 2,
-				 image.DpiX,
-				 image.DpiY, PixelFormats.Default);
-			target.Render(container);
-
-			//var point = new System.Windows.Point(info.World2ScreenXee(xee - size / 2), info.World2ScreenYps(yps - size / 2));
-			//var dimension = new System.Windows.Size(info.World2ScreenXee(size), info.World2ScreenYps(size));
-
-			var point = new System.Windows.Point(info.World2ScreenXee(xee) - target.Width / 2, info.World2ScreenYps(yps) - target.Height / 2);
-			var dimension = new System.Windows.Size(target.Width, target.Height);
-
-			info.Context.DrawImage(target, new System.Windows.Rect(point, dimension));
 		}
 
 		public void DrawEllipse(Brush brush, double posXee, double posYps, double sizeXee, double sizeYps, PaintInfo info)

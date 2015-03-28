@@ -17,7 +17,7 @@ namespace miaSim
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private const int NumberOfInitItems = 600;
+		private const int NumberOfInitItems = 100;
 
 		private readonly GameCanvas mCanvas;
 
@@ -42,7 +42,7 @@ namespace miaSim
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.UpdateDone += OnWorldUpdateDone;
 			mCylceCount = 0;
-			mCanvas.Init(mWorld, new Painter());
+			mCanvas.Init(new Painter(mWorld));
 
 			// Big bang
 			mWorld.Start();
@@ -100,7 +100,9 @@ namespace miaSim
 				text.Append("DispalyUpdate every x-Update = " + (int)UpdateViewEachXUpdate);
 				text.Append(Environment.NewLine);
 
-				mCanvas.Update(text.ToString());
+				mWorld.Info = text.ToString();
+
+				mCanvas.Update();
 			}
 		}
 

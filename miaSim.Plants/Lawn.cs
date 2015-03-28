@@ -13,9 +13,7 @@ namespace miaSim.Plants
 
 		// DNS properties
 		private LawnDns mDns;
-
-		// Dynamic properties
-		private int growFactor = 1;
+		private bool mIsDocked = false;
 
 		#endregion
 
@@ -44,66 +42,74 @@ namespace miaSim.Plants
 
 		public override void Update(double msSinceLastUpdate)
 		{
-			var oldPosition = Position;
-
-			var intersects = WorldInteraction.GetIntersectItems(this);
-
-			var intersectOnTop = false;
-			var intersectOnBottom = false;
-			var intersectOnLeft = false;
-			var intersectOnRight = false;
-
-			if (intersects.Count > 0)
-				System.Diagnostics.Debug.WriteLine("intersects");
-
-			var left = Position.Left;
-			var right = Position.Right;
-			var top = Position.Top;
-			var bottom = Position.Bottom;
-
-			foreach(var intersect in intersects)
+			//if (mIsDocked)
 			{
-				var intLeft = intersect.Position.Left;
-				var intRight = intersect.Position.Right;
-				var intTop = intersect.Position.Top;
-				var intBottom = intersect.Position.Bottom;
+				var oldPosition = Position;
 
-				if (top > intTop && top < intBottom)
-					intersectOnTop = true;
+				var intersects = WorldInteraction.GetIntersectItems(this);
 
-				if (bottom > intTop && bottom < intBottom)
-					intersectOnBottom = true;
+				var intersectOnTop = false;
+				var intersectOnBottom = false;
+				var intersectOnLeft = false;
+				var intersectOnRight = false;
 
-				if (left > intLeft && left < intRight)
-					intersectOnLeft = true;
+				if (intersects.Count > 0)
+					System.Diagnostics.Debug.WriteLine("intersects");
 
-				if (right > intLeft && right < intRight)
-					intersectOnRight = true;
+				var left = Position.Left;
+				var right = Position.Right;
+				var top = Position.Top;
+				var bottom = Position.Bottom;
+
+				foreach (var intersect in intersects)
+				{
+					var intLeft = intersect.Position.Left;
+					var intRight = intersect.Position.Right;
+					var intTop = intersect.Position.Top;
+					var intBottom = intersect.Position.Bottom;
+
+					if (top > intTop && top < intBottom)
+						intersectOnTop = true;
+
+					if (bottom > intTop && bottom < intBottom)
+						intersectOnBottom = true;
+
+					if (left > intLeft && left < intRight)
+						intersectOnLeft = true;
+
+					if (right > intLeft && right < intRight)
+						intersectOnRight = true;
+				}
+
+				if (!intersectOnTop)
+				{
+					top -= mDns.MaxGrowPerCylce;
+				}
+
+				if (!intersectOnBottom)
+				{
+					bottom += mDns.MaxGrowPerCylce;
+				}
+
+				if (!intersectOnLeft)
+				{
+					left -= mDns.MaxGrowPerCylce;
+				}
+
+				if (!intersectOnRight)
+				{
+					right += mDns.MaxGrowPerCylce;
+				}
+
+				Position = new Rect(new Point(left, top), new Point(right, bottom));
+
+				AdjustPosition();
+
+				if (oldPosition == Position)
+				{
+					mIsDocked = true;
+				}
 			}
-
-			if (!intersectOnTop)
-			{
-				top -= mDns.MaxGrowPerCylce;
-			}
-
-			if (!intersectOnBottom)
-			{
-				bottom += mDns.MaxGrowPerCylce;
-			}
-
-			if (!intersectOnLeft)
-			{
-				left -= mDns.MaxGrowPerCylce;
-			}
-
-			if (!intersectOnRight)
-			{
-				right += mDns.MaxGrowPerCylce;
-			}
-
-			Position = new Rect(new Point(left, top), new Point(right, bottom));
-
-			AdjustPosition();
 
 			//System.Diagnostics.Debug.WriteLine(this.GetDisplayText());
 		}
