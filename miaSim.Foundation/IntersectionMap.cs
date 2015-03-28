@@ -60,7 +60,7 @@ namespace miaSim.Foundation
 					var candidateRect = candidate.Position;
 
 					if (candidateRect.IntersectsWith(worldRect))
-						list.Add(item);
+						list.Add(candidate);
 				}
 			}
 

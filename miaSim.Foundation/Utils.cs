@@ -36,6 +36,11 @@ namespace miaSim.Foundation
 			return NextRandom() * max;
 		}
 
+		public static double NextRandom(double min, double max)
+		{
+			return NextRandom(max - min) + min;
+		}
+
 		public static int Next(int min, int max)
 		{
 			return RandomInstance.Value.Next(min, max);

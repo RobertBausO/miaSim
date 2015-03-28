@@ -38,7 +38,7 @@ namespace miaSim
 
 			mCanvas = canvas;
 
-			var list = new List<Func<IWorldItemIteraction, IWorldItem>> { WabberTree.CreateRandomTree };
+			var list = new List<Func<IWorldItemIteraction, IWorldItem>> { Lawn.CreateRandomTree };
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.UpdateDone += OnWorldUpdateDone;
 			mCylceCount = 0;
