@@ -98,8 +98,7 @@ namespace miaSim.Foundation
 
 		private void WorkLoop()
 		{
-			var dictLastUpdate = new Dictionary<long, DateTime>();
-
+			// init intersection map
 			Items.ForEach(i => mMap.Add(i));
 
 			do
@@ -113,22 +112,9 @@ namespace miaSim.Foundation
 					foreach (var item in items)
 					{
 						mMap.Remove(item);
-
-						var now = DateTime.Now;
-
-						if (dictLastUpdate.ContainsKey(item.Id))
 						{
-							var lastUpdate = dictLastUpdate[item.Id];
-							var diff = now.Subtract(lastUpdate);
-
-							item.Update(diff.TotalMilliseconds);
+							item.Update();
 						}
-						else
-						{
-							item.Update(0.0);
-						}
-
-						dictLastUpdate[item.Id] = now;
 						mMap.Add(item);
 					}
 				}

@@ -44,12 +44,16 @@
     <Compile Include="IntersectionMap.cs" />
     <Compile Include="IWorldItemIteraction.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="WorldItem.cs" />
+    <Compile Include="WorldItemBase.cs" />
     <Compile Include="IWorldItem.cs" />
     <Compile Include="World.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\miaGame\miaGame.csproj">
+      <Project>{adf61b6d-d3a8-436a-8c03-6f22f673ecb7}</Project>
+      <Name>miaGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\miaSim.Tools\miaSim.Tools.csproj">
       <Project>{c0a68509-82ea-404a-babf-503cea43e922}</Project>
       <Name>miaSim.Tools</Name>

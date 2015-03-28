@@ -5,9 +5,9 @@ using System.Windows.Media.Imaging;
 
 namespace miaGame.Painter
 {
-	public class DirectPainterHelper
+	public static class DirectPainterHelper
 	{
-		public void DrawText(string textToDraw, TextPosition position, TextSize size, Brush brush, PaintInfo info)
+		public static void DrawText(string textToDraw, TextPosition position, TextSize size, Brush brush, PaintInfo info)
 		{
 			if (!string.IsNullOrEmpty(textToDraw))
 			{
@@ -46,14 +46,14 @@ namespace miaGame.Painter
 			}
 		}
 
-		public void DrawEllipse(Brush brush, double posXee, double posYps, double sizeXee, double sizeYps, PaintInfo info)
+		public static void DrawEllipse(Brush brush, double posXee, double posYps, double sizeXee, double sizeYps, PaintInfo info)
 		{
 			info.Context.DrawEllipse(brush, new Pen(), 
 				new Point(info.World2ScreenXee(posXee), info.World2ScreenYps(posYps)), 
 				info.World2ScreenXee(sizeXee), info.World2ScreenYps(sizeYps));
 		}
 
-		public void DrawRectangle(Brush brush, Rect worldRect, PaintInfo info)
+		public static void DrawRectangle(Brush brush, Rect worldRect, PaintInfo info)
 		{
 			var screenRect = info.World2Screen(worldRect);
 			info.Context.DrawRectangle(brush, new Pen(), screenRect);

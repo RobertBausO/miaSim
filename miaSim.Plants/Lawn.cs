@@ -1,13 +1,15 @@
 ﻿using System;
 using miaSim.Foundation;
 using System.Windows;
+using miaGame.Painter;
+using System.Windows.Media;
 
 namespace miaSim.Plants
 {
 	/// <summary>
 	/// representation of lawn
 	/// </summary>
-	public class Lawn : WorldItem
+	public class Lawn : WorldItemBase
 	{
 		#region ================== Member variables =========================
 
@@ -40,11 +42,11 @@ namespace miaSim.Plants
 			return new Lawn(interaction, position, dns);
 		}
 
-		public override void Update(double msSinceLastUpdate)
+		public override void Update()
 		{
-			//if (mIsDocked)
+			if (!mIsDocked)
 			{
-				var oldPosition = Position;
+				Rect oldPosition = Position;
 
 				var intersects = WorldInteraction.GetIntersectItems(this);
 
@@ -113,6 +115,13 @@ namespace miaSim.Plants
 
 			//System.Diagnostics.Debug.WriteLine(this.GetDisplayText());
 		}
+
+		public override void Draw(PaintInfo paintInfo)
+		{
+			var brush = mIsDocked ? Brushes.Blue : Brushes.Green;
+			DirectPainterHelper.DrawRectangle(brush, Position, paintInfo);
+		}
+
 
 		#endregion
 	}

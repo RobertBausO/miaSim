@@ -17,7 +17,7 @@ namespace miaSim
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private const int NumberOfInitItems = 100;
+		private const int NumberOfInitItems = 600;
 
 		private readonly GameCanvas mCanvas;
 

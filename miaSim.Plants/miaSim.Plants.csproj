@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,6 +46,10 @@
     <Compile Include="Lawn.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\miaGame\miaGame.csproj">
+      <Project>{adf61b6d-d3a8-436a-8c03-6f22f673ecb7}</Project>
+      <Name>miaGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\miaSim.Foundation\miaSim.Foundation.csproj">
       <Project>{fba29631-61c8-480a-9251-f3f54abf0d1c}</Project>
       <Name>miaSim.Foundation</Name>

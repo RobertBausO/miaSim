@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using miaGame.Painter;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace miaSim.Foundation
@@ -10,7 +11,9 @@ namespace miaSim.Foundation
 
 		Rect Position { get;  }
 
-		void Update(double msSinceLastUpdate);
+		void Update();
+		void Draw(PaintInfo paintInfo);
+		
 		string GetDisplayText();
 
 		IList<Connection> Connections { get; }

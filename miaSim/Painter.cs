@@ -7,13 +7,11 @@ namespace miaSim
 {
 	public class Painter : IPainter
 	{
-		private DirectPainterHelper mHelper;
 		private World mWorld;
 
 		public Painter(World world)
 		{
 			mWorld = world;
-			mHelper = new DirectPainterHelper();
 		}
 
 		public void Draw(double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
@@ -22,14 +20,14 @@ namespace miaSim
 
 			DrawWorldItems(info);
 
-			mHelper.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
+			DirectPainterHelper.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
 		}
 
 		private void DrawWorldItems(PaintInfo info)
 		{
 			foreach (var item in mWorld.Items)
 			{
-				mHelper.DrawRectangle(Brushes.Green, item.Position, info);
+				item.Draw(info);
 			}
 		}
 	}

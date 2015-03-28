@@ -1,10 +1,11 @@
-﻿using System;
+﻿using miaGame.Painter;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 
 namespace miaSim.Foundation
 {
-	public abstract class WorldItem : IWorldItem
+	public abstract class WorldItemBase : IWorldItem
 	{
 		#region ================== Member variables =========================
 
@@ -15,7 +16,7 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		protected WorldItem(IWorldItemIteraction worldInteraction, string type, Rect position)
+		protected WorldItemBase(IWorldItemIteraction worldInteraction, string type, Rect position)
 		{
 			lock (NextIdLock)
 			{
@@ -47,7 +48,8 @@ namespace miaSim.Foundation
 
 		#region ================== Methods ==================================
 
-		public abstract void Update(double msSinceLastUpdate);
+		public abstract void Update();
+		public abstract void Draw(PaintInfo paintInfo);
 
 		//public abstract void Paint(PaintInfo paintInfo, DirectPainterHelper helper);
 
