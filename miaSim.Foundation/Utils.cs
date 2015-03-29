@@ -43,7 +43,7 @@ namespace miaSim.Foundation
 
 		public static int Next(int min, int max)
 		{
-			return RandomInstance.Value.Next(min, max);
+			return RandomInstance.Value.Next(min, max+1); // including max
 		}
 
 		#endregion

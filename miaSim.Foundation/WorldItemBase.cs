@@ -27,8 +27,6 @@ namespace miaSim.Foundation
 
 			Type = type;
 			Position = position;
-
-			Connections = new List<Connection>();
 		}
 
 		#endregion
@@ -42,16 +40,18 @@ namespace miaSim.Foundation
 
 		public Rect Position { get; set; }
 
-		public IList<Connection> Connections { get; private set; }
-
 		#endregion
 
 		#region ================== Methods ==================================
 
 		public abstract void Update();
 		public abstract void Draw(PaintInfo paintInfo);
+		public abstract void Tell(Message message);
 
-		//public abstract void Paint(PaintInfo paintInfo, DirectPainterHelper helper);
+		public Point Center()
+		{
+			return new Point(Position.Left + Position.Width / 2.0, Position.Top + Position.Height / 2.0);
+		}
 
 		public void AdjustPosition()
 		{

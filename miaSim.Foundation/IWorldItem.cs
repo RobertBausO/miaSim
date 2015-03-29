@@ -11,11 +11,13 @@ namespace miaSim.Foundation
 
 		Rect Position { get;  }
 
+		Point Center();
+
 		void Update();
 		void Draw(PaintInfo paintInfo);
+
+		void Tell(Message message);
 		
 		string GetDisplayText();
-
-		IList<Connection> Connections { get; }
 	}
 }

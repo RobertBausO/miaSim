@@ -28,7 +28,7 @@ namespace miaSim.Foundation
 
 			mWorldItems = new List<IWorldItem>();
 
-			mLoopStatistic = new StopwatchStatistic(10, s =>
+			mLoopStatistic = new StopwatchStatistic(17, s =>
 			{
 				LoopsPerSecond = 1000.0 / mLoopStatistic.Average.TotalMilliseconds;
 			});

@@ -46,6 +46,30 @@ namespace miaGame.Painter
 			}
 		}
 
+		public static void DrawText(string textToDraw, Point position, TextSize size, Brush brush, PaintInfo info)
+		{
+			if (!string.IsNullOrEmpty(textToDraw))
+			{
+				var sizeInPixel =
+					 (size == TextSize.Small) ? info.ScreenSizeYps / 50 :
+					 (size == TextSize.Medium) ? info.ScreenSizeYps / 25 :
+					 info.ScreenSizeYps / 7;
+
+				var text = new FormattedText(textToDraw,
+					 System.Globalization.CultureInfo.CurrentUICulture,
+					 FlowDirection.LeftToRight, new Typeface("Arial"),
+						 sizeInPixel, brush);
+
+				text.TextAlignment = TextAlignment.Center;
+
+				position.X = info.World2ScreenXee(position.X);
+				position.Y = info.World2ScreenYps(position.Y);
+
+				info.Context.DrawText(text, position);
+			}
+		}
+
+
 		public static void DrawEllipse(Brush brush, double posXee, double posYps, double sizeXee, double sizeYps, PaintInfo info)
 		{
 			info.Context.DrawEllipse(brush, new Pen(), 
@@ -57,6 +81,18 @@ namespace miaGame.Painter
 		{
 			var screenRect = info.World2Screen(worldRect);
 			info.Context.DrawRectangle(brush, new Pen(), screenRect);
+		}
+
+
+		public static void DrawLine(Brush brush, Point a, Point b, PaintInfo info)
+		{
+			a.X = info.World2ScreenXee(a.X);
+			a.Y = info.World2ScreenYps(a.Y);
+
+			b.X = info.World2ScreenXee(b.X);
+			b.Y = info.World2ScreenYps(b.Y);
+
+			info.Context.DrawLine(new Pen(brush, info.World2ScreenXee(0.001f)), a, b);
 		}
 	}
 }
