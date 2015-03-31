@@ -3,106 +3,73 @@ using System.Diagnostics;
 
 namespace miaGame.Tools
 {
-    /// <summary>
-    /// Only for time measurement
-    /// </summary>
-    public class StopwatchStatistic
-    {
+	/// <summary>
+	/// Only for time measurement
+	/// </summary>
+	public class StopwatchStatistic
+	{
 
-        #region ================== Member variables =========================
+		#region ================== Member variables =========================
 
-        private Stopwatch mStopwatch;
-        private TimeSpan mSum;
-        private bool mIsRunning;
+		private Stopwatch mStopwatch;
 
-        private readonly int mReportAfterMeasures;
-		  private readonly Action<StopwatchStatistic> mReportAction;
+		private readonly int mReportAfterMeasures;
+		private readonly Action<StopwatchStatistic> mReportAction;
 
-        #endregion
+		#endregion
 
-        #region ================== Constructor/Destructor ===================
+		#region ================== Constructor/Destructor ===================
 
-		  public StopwatchStatistic(int reportAfterMeasures, Action<StopwatchStatistic> reportAction)
-        {
-            mReportAfterMeasures = reportAfterMeasures;
-            mReportAction = reportAction;
+		public StopwatchStatistic(int reportAfterMeasures, Action<StopwatchStatistic> reportAction)
+		{
+			mReportAfterMeasures = reportAfterMeasures;
+			mReportAction = reportAction;
 
-            Reset();
-        }
+			Count = 0;
+			mStopwatch = Stopwatch.StartNew();
+		}
 
-        #endregion
+		#endregion
 
-        #region ================== Properties ===============================
+		#region ================== Properties ===============================
 
-        public TimeSpan Min { get; private set; }
-        public TimeSpan Max { get; private set; }
+		public double AverageTicks { get; private set; }
+		public double AverageMs { get; private set; }
 
-        public TimeSpan Average { get { return TimeSpan.FromMilliseconds(mSum.TotalMilliseconds / Count); } }
+		public long Count { get; private set; }
 
-        public long Count { get; private set; }
+		#endregion
 
-        public bool IsRunning { get { return mIsRunning; } }
+		#region ================== Methods ==================================
 
-        #endregion
+		public void MeasurePoint()
+		{
+			Count++;
 
-        #region ================== Methods ==================================
+			if (Count == mReportAfterMeasures)
+			{
+				// stop
+				mStopwatch.Stop();
 
-        public void MeasurePoint()
-        {
-            if (IsRunning)
-            {
-                Stop();
+				AverageTicks = (double)mStopwatch.Elapsed.Ticks / (double)Count;
+				AverageMs = AverageTicks / (double)TimeSpan.TicksPerMillisecond;
 
-                if (Count == mReportAfterMeasures)
-                {
-                    mReportAction(this);
-                    Reset();
-                }
-            }
+				// do action
+				mReportAction(this);
 
-            Start();
-        }
+				// reset
+				Count = 0;
+				mStopwatch.Reset();
+				mStopwatch.Start();
+			}
+		}
 
-        public void Start()
-        {
-            mIsRunning = true;
-            mStopwatch.Start();
-        }
+		public override string ToString()
+		{
+			return string.Format("Average={0}", AverageMs);
+		}
 
-        public void Stop()
-        {
-            mIsRunning = false;
-            mStopwatch.Stop();
-            Count++;
+		#endregion
 
-            mSum = mSum.Add(mStopwatch.Elapsed);
-
-            if (mStopwatch.Elapsed < Min)
-                Min = mStopwatch.Elapsed;
-
-            if (mStopwatch.Elapsed > Max)
-                Max = mStopwatch.Elapsed;
-
-            mStopwatch.Reset();
-        }
-
-        public void Reset()
-        {
-            mIsRunning = false;
-            mStopwatch = new Stopwatch();
-            Count = 0;
-            mSum = TimeSpan.FromMilliseconds(0);
-
-            Min = TimeSpan.MaxValue;
-            Max = TimeSpan.MinValue;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Min={0}; Max={1}; Average={2}", (int)Min.TotalMilliseconds, (int)Max.TotalMilliseconds, (int)Average.TotalMilliseconds);
-        }
-
-        #endregion
-
-    }
+	}
 }

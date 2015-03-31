@@ -64,9 +64,6 @@ namespace miaSim.Plants
 				var intersectOnLeft = false;
 				var intersectOnRight = false;
 
-				if (intersects.Count > 0)
-					System.Diagnostics.Debug.WriteLine("intersects");
-
 				var left = Position.Left;
 				var right = Position.Right;
 				var top = Position.Top;
