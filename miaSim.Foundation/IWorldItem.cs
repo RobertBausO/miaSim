@@ -1,4 +1,4 @@
-﻿using miaGame.Painter;
+﻿using miaGame;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -14,7 +14,7 @@ namespace miaSim.Foundation
 		Point Center();
 
 		void Update();
-		void Draw(PaintInfo paintInfo);
+		void Draw(PaintContext paintInfo);
 
 		void Tell(Message message);
 		

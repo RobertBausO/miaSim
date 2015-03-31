@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
-using miaGame.Painter;
+using miaGame;
 using miaSim.Foundation;
 
 namespace miaSim
@@ -14,20 +14,17 @@ namespace miaSim
 			mWorld = world;
 		}
 
-		public void Draw(double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
+		public void Draw(PaintContext context)
 		{
-			var info = new PaintInfo(1.0, 1.0, screenWidth, screenHeight, canvas, context);
-
-			DrawWorldItems(info);
-
-			DirectPainterHelper.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen, info);
+			DrawWorldItems(context);
+			context.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen);
 		}
 
-		private void DrawWorldItems(PaintInfo info)
+		private void DrawWorldItems(PaintContext context)
 		{
 			foreach (var item in mWorld.Items)
 			{
-				item.Draw(info);
+				item.Draw(context);
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Threading;
-using miaGame.Painter;
 using System.Windows.Controls;
 
 namespace miaGame
@@ -41,7 +40,8 @@ namespace miaGame
 		{
 			if (mPainter != null)
 			{
-				mPainter.Draw(ActualWidth, ActualHeight, this, dc);
+				var worker = new PaintContext(ActualWidth, ActualHeight, this, dc);
+				mPainter.Draw(worker);
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿namespace miaGame.Painter
+﻿namespace miaGame
 {
 	public enum TextPosition
 	{

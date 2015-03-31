@@ -1,7 +1,7 @@
 ﻿using System;
 using miaSim.Foundation;
 using System.Windows;
-using miaGame.Painter;
+using miaGame;
 using System.Windows.Media;
 using System.Collections.Generic;
 
@@ -148,25 +148,25 @@ namespace miaSim.Plants
 			}
 		}
 
-		public override void Draw(PaintInfo paintInfo)
+		public override void Draw(PaintContext context)
 		{
 			var brush = mIsDocked ? Brushes.Blue : Brushes.Green;
-			DirectPainterHelper.DrawRectangle(brush, Position, paintInfo);
+			context.DrawRectangle(brush, Position);
 			
 			if (Load > 0)
 			{
 				var center = Center();
-				DirectPainterHelper.DrawEllipse(Brushes.Yellow, center.X, center.Y, Position.Width / 3, Position.Height / 3, paintInfo);
+				context.DrawEllipse(Brushes.Yellow, center.X, center.Y, Position.Width / 3, Position.Height / 3);
 			}
 
 			if (mConnections != null)
 			{
 				foreach (var connection in mConnections)
 				{
-					DirectPainterHelper.DrawLine(Brushes.Black, this.Center(), connection.Center(), paintInfo);
+					context.DrawLine(Brushes.Black, this.Center(), connection.Center());
 				}
 
-				DirectPainterHelper.DrawText(mConnections.Count.ToString(), this.Center(), TextSize.Small, Brushes.Black, paintInfo);
+				context.DrawText(mConnections.Count.ToString(), this.Center(), TextSize.Small, Brushes.Black);
 			}
 		}
 

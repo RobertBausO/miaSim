@@ -1,4 +1,4 @@
-﻿using miaGame.Painter;
+﻿using miaGame;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -45,7 +45,7 @@ namespace miaSim.Foundation
 		#region ================== Methods ==================================
 
 		public abstract void Update();
-		public abstract void Draw(PaintInfo paintInfo);
+		public abstract void Draw(PaintContext paintInfo);
 		public abstract void Tell(Message message);
 
 		public Point Center()
