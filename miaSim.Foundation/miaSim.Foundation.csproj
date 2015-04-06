@@ -45,7 +45,6 @@
     <Compile Include="Message.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WorldItemBase.cs" />
-    <Compile Include="IWorldItem.cs" />
     <Compile Include="World.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

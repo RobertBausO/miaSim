@@ -5,13 +5,13 @@ using miaGame.Tools;
 
 namespace miaSim.Foundation
 {
-	public class World : IWorldItemIteraction
+	public class World : WorldItemBaseIteraction
 	{
 		#region ================== Member variables =========================
 
 		public event Action<World> UpdateDone;
 
-		private readonly List<IWorldItem> mWorldItems;
+		private readonly List<WorldItemBase> mWorldItems;
 		private readonly object mWorldItemLock = new object();
 		private Thread mWorker;
 		private readonly StopwatchStatistic mLoopStatistic;
@@ -26,7 +26,7 @@ namespace miaSim.Foundation
 		{
 			UpdateLock = new object();
 
-			mWorldItems = new List<IWorldItem>();
+			mWorldItems = new List<WorldItemBase>();
 
 			mLoopStatistic = new StopwatchStatistic(25, s =>
 			{
@@ -51,7 +51,7 @@ namespace miaSim.Foundation
 		/// <summary>
 		/// all items of the world
 		/// </summary>
-		public List<IWorldItem> Items { get { return mWorldItems; } }
+		public List<WorldItemBase> Items { get { return mWorldItems; } }
 
 		/// <summary>
 		/// lock for sync with update of the world
@@ -62,7 +62,7 @@ namespace miaSim.Foundation
 		/// create a world (random)
 		/// </summary>
 		/// <returns></returns>
-		public static World Create(int numberOfItems, IList<Func<IWorldItemIteraction, IWorldItem>> factories)
+		public static World Create(int numberOfItems, IList<Func<WorldItemBaseIteraction, WorldItemBase>> factories)
 		{
 			var newWorld = new World();
 
@@ -77,17 +77,14 @@ namespace miaSim.Foundation
 			return newWorld;
 		}
 
-		public void AddItem(IWorldItem newItem)
+		public void AddItem(WorldItemBase newItem)
 		{
-			//foreach (var item in mWorldItems)
-			//{
-			//	var distance = item.CalcDistanceTo(newItem);
-
-			//	newItem.Connections.Add(new Connection(item, distance));
-			//	item.Connections.Add(new Connection(newItem, distance));
-			//}
-
 			mWorldItems.Add(newItem);
+		}
+
+		public void RemoveItem(WorldItemBase item)
+		{
+			mWorldItems.Remove(item);
 		}
 
 		public void Start()
@@ -96,10 +93,13 @@ namespace miaSim.Foundation
 			mWorker.Start();
 		}
 
+		private bool mUseIntersectionMap = false;
+
 		private void WorkLoop()
 		{
 			// init intersection map
-			Items.ForEach(i => mMap.Add(i));
+			if (mUseIntersectionMap)
+				Items.ForEach(i => mMap.Add(i));
 
 			do
 			{
@@ -109,13 +109,21 @@ namespace miaSim.Foundation
 
 				lock (UpdateLock)
 				{
-					foreach (var item in items)
+					int currentIndex = 0;
+
+					while(currentIndex < items.Count)
 					{
-						mMap.Remove(item);
-						{
-							item.Update();
-						}
-						mMap.Add(item);
+						var item = items[currentIndex];
+
+						if (mUseIntersectionMap)
+							mMap.Remove(item);
+
+						item.Update();
+
+						if (mUseIntersectionMap)
+							mMap.Add(item);
+
+						currentIndex++;
 					}
 				}
 
@@ -128,22 +136,24 @@ namespace miaSim.Foundation
 		}
 
 
-		public IList<IWorldItem> GetIntersectItems(IWorldItem worldItem)
+		public IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem)
 		{
-			return GetIntersectItemsByMap(worldItem);
-			//return GetIntersectItemsDirect(worldItem);
+			if (mUseIntersectionMap)
+				return GetIntersectItemsByMap(worldItem);
+
+			return GetIntersectItemsDirect(worldItem);
 		}
 
 
-		public IList<IWorldItem> GetIntersectItemsByMap(IWorldItem worldItem)
+		public IList<WorldItemBase> GetIntersectItemsByMap(WorldItemBase worldItem)
 		{
 			return mMap.GetIntersects(worldItem);
 		}
 
-		public IList<IWorldItem> GetIntersectItemsDirect(IWorldItem worldItem)
+		public IList<WorldItemBase> GetIntersectItemsDirect(WorldItemBase worldItem)
 		{
 			var worldItemRect = worldItem.Position;
-			var list = new List<IWorldItem>();
+			var list = new List<WorldItemBase>();
 
 			foreach (var item in Items)
 			{

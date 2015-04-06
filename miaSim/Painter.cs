@@ -22,10 +22,19 @@ namespace miaSim
 
 		private void DrawWorldItems(PaintContext context)
 		{
+			mWorld.Items.Sort(CompareItemsByZ);
 			foreach (var item in mWorld.Items)
 			{
 				item.Draw(context);
 			}
 		}
+
+
+		private static int CompareItemsByZ(WorldItemBase a, WorldItemBase b)
+		{
+			return a.ZPosition.CompareTo(b.ZPosition);
+		}
+
 	}
+
 }

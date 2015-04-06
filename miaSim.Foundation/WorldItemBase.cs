@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace miaSim.Foundation
 {
-	public abstract class WorldItemBase : IWorldItem
+	public abstract class WorldItemBase
 	{
 		#region ================== Member variables =========================
 
@@ -16,7 +16,7 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		protected WorldItemBase(IWorldItemIteraction worldInteraction, string type, Rect position)
+		protected WorldItemBase(WorldItemBaseIteraction worldInteraction, string type, Rect position)
 		{
 			lock (NextIdLock)
 			{
@@ -33,12 +33,14 @@ namespace miaSim.Foundation
 
 		#region ================== Properties ===============================
 
-		public IWorldItemIteraction WorldInteraction { get; private set; }
+		public WorldItemBaseIteraction WorldInteraction { get; private set; }
 
 		public string Type { get; private set; }
 		public long Id { get; private set; }
 
 		public Rect Position { get; set; }
+
+		public virtual int ZPosition { get { return 0; } }
 
 		#endregion
 
@@ -48,7 +50,7 @@ namespace miaSim.Foundation
 		public abstract void Draw(PaintContext paintInfo);
 		public abstract void Tell(Message message);
 
-		public Point Center()
+		public Point CalcCenter()
 		{
 			return new Point(Position.Left + Position.Width / 2.0, Position.Top + Position.Height / 2.0);
 		}
@@ -93,6 +95,45 @@ namespace miaSim.Foundation
 			var position = string.Format("{0}/{1}/{2}/{3}", Utils.Double2String(Position.Left), Utils.Double2String(Position.Top), Utils.Double2String(Position.Right), Utils.Double2String(Position.Bottom));
 			return string.Format("{0}-{1}:{2}", Id, Type, position);
 		}
+
+		public static void TransferSize(WorldItemBase from, WorldItemBase to, double part)
+		{
+			var widthTransfer = from.Position.Width * part;
+			var heightTransfer = from.Position.Height * part;
+
+			from.ChangeSize(-widthTransfer, -heightTransfer);
+			to.ChangeSize(widthTransfer, heightTransfer);
+		}
+
+		public void ChangeSize(double widthDiff, double heightDiff)
+		{
+			var w = widthDiff / 2.0;
+			var h = heightDiff / 2.0;
+
+			Position = new Rect(new Point(Position.Left - w, Position.Top - h), 
+										new Point(Position.Right + w, Position.Bottom + h));
+
+			AdjustPosition();
+		}
+
+		public void SetSize(double width, double height)
+		{
+			var w = width / 2.0;
+			var h = height / 2.0;
+
+			var center = CalcCenter();
+			
+			Position = new Rect(new Point(center.X - w, center.Y - h),
+										new Point(center.X + w, center.Y + h));
+			AdjustPosition();
+		}
+
+		public void Move(double xee, double yps)
+		{
+			Position = new Rect(new Point(Position.Left + xee, Position.Top + yps),
+										new Point(Position.Right + xee, Position.Bottom + yps));
+		}
+
 
 		#endregion
 

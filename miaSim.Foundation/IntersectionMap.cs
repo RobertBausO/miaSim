@@ -9,7 +9,7 @@ namespace miaSim.Foundation
 		#region ================== Member variables =========================
 
 		private readonly int mCountXandY;
-		private Dictionary<long, IWorldItem>[,] mData;
+		private Dictionary<long, WorldItemBase>[,] mData;
 
 		#endregion
 
@@ -30,22 +30,22 @@ namespace miaSim.Foundation
 
 		public void Reset()
 		{
-			mData = new Dictionary<long, IWorldItem>[mCountXandY+1, mCountXandY+1];
+			mData = new Dictionary<long, WorldItemBase>[mCountXandY+1, mCountXandY+1];
 		}
 
-		public void Add(IWorldItem item)
+		public void Add(WorldItemBase item)
 		{
 			ForEachMapEntry(item, d => d.Add(item.Id, item));
 		}
 
-		public void Remove(IWorldItem item)
+		public void Remove(WorldItemBase item)
 		{
 			ForEachMapEntry(item, d => d.Remove(item.Id));
 		}
 
-		public IList<IWorldItem> GetIntersects(IWorldItem item)
+		public IList<WorldItemBase> GetIntersects(WorldItemBase item)
 		{
-			var list = new List<IWorldItem>();
+			var list = new List<WorldItemBase>();
 			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
 
@@ -67,15 +67,15 @@ namespace miaSim.Foundation
 			return list;
 		}
 
-		private Dictionary<long, IWorldItem> GetCandidatesByOutbound(Rect mapRect)
+		private Dictionary<long, WorldItemBase> GetCandidatesByOutbound(Rect mapRect)
 		{
-			var candidates = new Dictionary<long, IWorldItem>();
+			var candidates = new Dictionary<long, WorldItemBase>();
 
 			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top + 1)),
 				new Point(Adjust((int)mapRect.Right + 1), Adjust((int)mapRect.Bottom - 1)));
 
 			// scan the outbound line of the rect
-			var action = new Action<Dictionary<long, IWorldItem>>(dict => MergeDictionaries(candidates, dict));
+			var action = new Action<Dictionary<long, WorldItemBase>>(dict => MergeDictionaries(candidates, dict));
 
 			// top
 			ForEachMapEntry(new Rect(new Point(outboundRect.Left, outboundRect.Top), new Point(outboundRect.Right, outboundRect.Top)), action);
@@ -92,15 +92,15 @@ namespace miaSim.Foundation
 			return candidates;
 		}
 
-		private Dictionary<long, IWorldItem> GetCandidatesByFullScan(Rect mapRect)
+		private Dictionary<long, WorldItemBase> GetCandidatesByFullScan(Rect mapRect)
 		{
-			var candidates = new Dictionary<long, IWorldItem>();
+			var candidates = new Dictionary<long, WorldItemBase>();
 
 			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top - 1)),
 				new Point(Adjust((int)mapRect.Right + 1), Adjust((int)mapRect.Bottom + 1)));
 
 			// scan the outbound line of the rect
-			var action = new Action<Dictionary<long, IWorldItem>>(dict => MergeDictionaries(candidates, dict));
+			var action = new Action<Dictionary<long, WorldItemBase>>(dict => MergeDictionaries(candidates, dict));
 
 			// full scan
 			ForEachMapEntry(outboundRect, action);
@@ -109,7 +109,7 @@ namespace miaSim.Foundation
 		}
 
 
-		private static void MergeDictionaries(Dictionary<long, IWorldItem> baseDict, Dictionary<long, IWorldItem> toBeAdded)
+		private static void MergeDictionaries(Dictionary<long, WorldItemBase> baseDict, Dictionary<long, WorldItemBase> toBeAdded)
 		{
 			foreach (var key in toBeAdded.Keys)
 			{
@@ -121,7 +121,7 @@ namespace miaSim.Foundation
 		}
 
 
-		private void ForEachMapEntry(IWorldItem item, Action<Dictionary<long, IWorldItem>> toDo)
+		private void ForEachMapEntry(WorldItemBase item, Action<Dictionary<long, WorldItemBase>> toDo)
 		{
 			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
@@ -129,7 +129,7 @@ namespace miaSim.Foundation
 			ForEachMapEntry(mapRect, toDo);
 		}
 
-		private void ForEachMapEntry(Rect mapRect, Action<Dictionary<long, IWorldItem>> toDo)
+		private void ForEachMapEntry(Rect mapRect, Action<Dictionary<long, WorldItemBase>> toDo)
 		{
 			for (var x = (int)mapRect.Left; x <= (int)mapRect.Right; x++)
 			{
@@ -137,7 +137,7 @@ namespace miaSim.Foundation
 				{
 					if (mData[x, y] == null)
 					{
-						mData[x, y] = new Dictionary<long, IWorldItem>();
+						mData[x, y] = new Dictionary<long, WorldItemBase>();
 					}
 
 					toDo(mData[x, y]);

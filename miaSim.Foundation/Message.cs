@@ -8,13 +8,13 @@ namespace miaSim.Foundation
 {
 	public class Message
 	{
-		public Message(IWorldItem senderItem, string command)
+		public Message(WorldItemBase senderItem, string command)
 		{
 			SenderItem = senderItem;
 			Command = command;
 		}
 
-		public IWorldItem SenderItem { get; set; }
+		public WorldItemBase SenderItem { get; set; }
 		public string Command { get; set; }
 	}
 }

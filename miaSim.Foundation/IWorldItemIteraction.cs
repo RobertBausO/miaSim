@@ -2,8 +2,11 @@
 
 namespace miaSim.Foundation
 {
-	public interface IWorldItemIteraction
+	public interface WorldItemBaseIteraction
 	{
-		IList<IWorldItem> GetIntersectItems(IWorldItem worldItem);
+		IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem);
+
+		void AddItem(WorldItemBase worldItem);
+		void RemoveItem(WorldItemBase worldItem);
 	}
 }
