@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using miaGame;
 using miaSim.Foundation;
+using System.Collections.Generic;
 
 namespace miaSim
 {
@@ -17,18 +18,21 @@ namespace miaSim
 		public void Draw(PaintContext context)
 		{
 			DrawWorldItems(context);
-			context.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.DarkGreen);
+			context.DrawText(mWorld.Info, TextPosition.LeftCorner, TextSize.Medium, Brushes.Black);
 		}
 
 		private void DrawWorldItems(PaintContext context)
 		{
-			mWorld.Items.Sort(CompareItemsByZ);
-			foreach (var item in mWorld.Items)
+			lock(mWorld.UpdateLock)
 			{
-				item.Draw(context);
+				var list = new List<WorldItemBase>(mWorld.Items);
+				list.Sort(CompareItemsByZ);
+				foreach (var item in mWorld.Items)
+				{
+					item.Draw(context);
+				}
 			}
 		}
-
 
 		private static int CompareItemsByZ(WorldItemBase a, WorldItemBase b)
 		{

@@ -136,9 +136,12 @@ namespace miaSim.Plants
 
 				Position = new Rect(new Point(left, top), new Point(right, bottom));
 
-				AdjustPosition();
+				if (PositionOk())
+				{
+					Position = oldPosition;
+				}
 
-				if (oldPosition == Position)
+				if (intersectOnTop && intersectOnLeft && intersectOnRight && intersectOnBottom)
 				{
 					mIsDocked = true;
 					mConnections = intersects;

@@ -55,38 +55,28 @@ namespace miaSim.Foundation
 			return new Point(Position.Left + Position.Width / 2.0, Position.Top + Position.Height / 2.0);
 		}
 
-		public void AdjustPosition()
+		public bool PositionOk()
 		{
 			var left = Position.Left;
 			var right = Position.Right;
 			var top = Position.Top;
 			var bottom = Position.Bottom;
 
-			var changed = false;
+			var isOK = true;
 
-			Adjust(ref left, ref changed);
-			Adjust(ref right, ref changed);
-			Adjust(ref top, ref changed);
-			Adjust(ref bottom, ref changed);
+			Check(left, ref isOK);
+			Check(right, ref isOK);
+			Check(top, ref isOK);
+			Check(bottom, ref isOK);
 
-			if (changed)
-			{
-				Position = new Rect(new Point(left, top), new Point(right, bottom));
-			}
+			return isOK;
 		}
 
-		private void Adjust(ref double value, ref bool changed)
+		private void Check(double value, ref bool isOk)
 		{
-			if (value < 0.0)
+			if (value < 0.0 || value > 1.0)
 			{
-				value = 0.0;
-				changed = true;
-			}
-
-			if (value > 1.0)
-			{
-				value = 1.0;
-				changed = true;
+				isOk = false;
 			}
 		}
 
@@ -96,42 +86,69 @@ namespace miaSim.Foundation
 			return string.Format("{0}-{1}:{2}", Id, Type, position);
 		}
 
-		public static void TransferSize(WorldItemBase from, WorldItemBase to, double part)
-		{
-			var widthTransfer = from.Position.Width * part;
-			var heightTransfer = from.Position.Height * part;
 
-			from.ChangeSize(-widthTransfer, -heightTransfer);
-			to.ChangeSize(widthTransfer, heightTransfer);
+		public virtual bool ChangeSize(double factor)
+		{
+			var w = Position.Width * factor;
+			var h = Position.Height * factor;
+
+			return ChangeSize(w, h);
 		}
 
-		public void ChangeSize(double widthDiff, double heightDiff)
+		public virtual bool ChangeSize(double widthDiff, double heightDiff)
 		{
+			var oldPos = Position;
+
 			var w = widthDiff / 2.0;
 			var h = heightDiff / 2.0;
 
 			Position = new Rect(new Point(Position.Left - w, Position.Top - h), 
-										new Point(Position.Right + w, Position.Bottom + h));
+								new Point(Position.Right + w, Position.Bottom + h));
 
-			AdjustPosition();
+			if (!PositionOk())
+			{
+				Position = oldPos;
+				return false;
+			}
+
+			return true;
 		}
 
-		public void SetSize(double width, double height)
+		public virtual bool SetSize(double width, double height)
 		{
+			var oldPos = Position;
+
 			var w = width / 2.0;
 			var h = height / 2.0;
 
 			var center = CalcCenter();
 			
 			Position = new Rect(new Point(center.X - w, center.Y - h),
-										new Point(center.X + w, center.Y + h));
-			AdjustPosition();
+								new Point(center.X + w, center.Y + h));
+
+			if (!PositionOk())
+			{
+				Position = oldPos;
+				return false;
+			}
+
+			return true;
 		}
 
-		public void Move(double xee, double yps)
+		public virtual bool Move(double xee, double yps)
 		{
+			var oldPos = Position;
+
 			Position = new Rect(new Point(Position.Left + xee, Position.Top + yps),
-										new Point(Position.Right + xee, Position.Bottom + yps));
+								new Point(Position.Right + xee, Position.Bottom + yps));
+
+			if (!PositionOk())
+			{
+				Position = oldPos;
+				return false;
+			}
+
+			return true;
 		}
 
 

@@ -39,6 +39,7 @@ namespace miaSim
 			mCanvas = canvas;
 
 			var list = new List<Func<WorldItemBaseIteraction, WorldItemBase>> { Manna.CreateRandomized, MannaEater.CreateRandomized };
+			
 			mWorld = World.Create(NumberOfInitItems, list);
 			mWorld.UpdateDone += OnWorldUpdateDone;
 			mCylceCount = 0;
@@ -99,6 +100,26 @@ namespace miaSim
 				text.Append(Environment.NewLine);
 				text.Append("DispalyUpdate every x-Update = " + (int)UpdateViewEachXUpdate);
 				text.Append(Environment.NewLine);
+
+				var dict = new Dictionary<string, int>();
+
+				foreach(var item in mWorld.Items)
+				{
+					var typeName = item.GetType().Name;
+
+					if (!dict.ContainsKey(typeName))
+					{
+						dict.Add(typeName, 0);
+					}
+
+					dict[typeName]++;
+				}
+
+				foreach(var type in dict.Keys)
+				{
+					text.Append(string.Format("Type={0}; Count ={1}", type, dict[type]));
+					text.Append(Environment.NewLine);
+				}
 
 				mWorld.Info = text.ToString();
 

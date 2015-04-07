@@ -93,13 +93,18 @@ namespace miaSim.Foundation
 			mWorker.Start();
 		}
 
-		private bool mUseIntersectionMap = false;
+		private bool mUseIntersectionMap = true;
 
 		private void WorkLoop()
 		{
 			// init intersection map
 			if (mUseIntersectionMap)
-				Items.ForEach(i => mMap.Add(i));
+			{
+				lock(UpdateLock)
+				{
+					Items.ForEach(i => mMap.Add(i));
+				}
+			}
 
 			do
 			{
@@ -115,15 +120,18 @@ namespace miaSim.Foundation
 					{
 						var item = items[currentIndex];
 
-						if (mUseIntersectionMap)
-							mMap.Remove(item);
+						lock (UpdateLock)
+						{
+							if (mUseIntersectionMap)
+								mMap.Remove(item);
 
-						item.Update();
+							item.Update();
 
-						if (mUseIntersectionMap)
-							mMap.Add(item);
+							if (mUseIntersectionMap)
+								mMap.Add(item);
 
-						currentIndex++;
+							currentIndex++;
+						}
 					}
 				}
 

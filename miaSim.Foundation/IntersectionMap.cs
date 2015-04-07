@@ -35,12 +35,25 @@ namespace miaSim.Foundation
 
 		public void Add(WorldItemBase item)
 		{
-			ForEachMapEntry(item, d => d.Add(item.Id, item));
+			ForEachMapEntry(item, d => d.Add(item.Id, item), "Add");
 		}
 
 		public void Remove(WorldItemBase item)
 		{
-			ForEachMapEntry(item, d => d.Remove(item.Id));
+			//ForEachMapEntry(item, d => d.Remove(item.Id), "Remove");
+			//var mapRect = World2Map(item.Position);
+
+			// complete scan, because position could have been changed since last Add
+			for (var x = 0; x <= mCountXandY; x++)
+			{
+				for (var y = 0; y <= mCountXandY; y++)
+				{
+					if (mData[x,y] != null && mData[x,y].ContainsKey(item.Id))
+					{
+						mData[x, y].Remove(item.Id);
+					}
+				}
+			}
 		}
 
 		public IList<WorldItemBase> GetIntersects(WorldItemBase item)
@@ -121,10 +134,12 @@ namespace miaSim.Foundation
 		}
 
 
-		private void ForEachMapEntry(WorldItemBase item, Action<Dictionary<long, WorldItemBase>> toDo)
+		private void ForEachMapEntry(WorldItemBase item, Action<Dictionary<long, WorldItemBase>> toDo, string description)
 		{
 			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
+
+			//System.Diagnostics.Debug.WriteLine(string.Format("MapEntry;Action={0};ID={1};Rect={2}", description, item.Id, mapRect));
 
 			ForEachMapEntry(mapRect, toDo);
 		}
@@ -147,17 +162,17 @@ namespace miaSim.Foundation
 
 		private Rect World2Map(Rect worldRect)
 		{
-			var p1 = new Point(World2MapLeftBottom(worldRect.Left), World2MapRightTop(worldRect.Top));
-			var p2 = new Point(World2MapRightTop(worldRect.Right), World2MapLeftBottom(worldRect.Bottom));
+			var p1 = new Point(World2MapLeftTop(worldRect.Left), World2MapLeftTop(worldRect.Top));
+			var p2 = new Point(World2MapRightBottom(worldRect.Right), World2MapRightBottom(worldRect.Bottom));
 			return new Rect(p1, p2);
 		}
 
-		private int World2MapLeftBottom(double world)
+		private int World2MapLeftTop(double world)
 		{
 			return Adjust((int)(Math.Floor(mCountXandY * world)));
 		}
 
-		private int World2MapRightTop(double world)
+		private int World2MapRightBottom(double world)
 		{
 			return Adjust((int)(Math.Ceiling(mCountXandY * world)));
 		}
