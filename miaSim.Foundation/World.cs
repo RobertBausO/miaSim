@@ -144,33 +144,36 @@ namespace miaSim.Foundation
 		}
 
 
-		public IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem)
+		public IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem, Type type)
 		{
 			if (mUseIntersectionMap)
-				return GetIntersectItemsByMap(worldItem);
+				return GetIntersectItemsByMap(worldItem, type);
 
-			return GetIntersectItemsDirect(worldItem);
+			return GetIntersectItemsDirect(worldItem, type);
 		}
 
 
-		public IList<WorldItemBase> GetIntersectItemsByMap(WorldItemBase worldItem)
+		public IList<WorldItemBase> GetIntersectItemsByMap(WorldItemBase worldItem, Type type)
 		{
-			return mMap.GetIntersects(worldItem);
+			return mMap.GetIntersects(worldItem, type);
 		}
 
-		public IList<WorldItemBase> GetIntersectItemsDirect(WorldItemBase worldItem)
+		public IList<WorldItemBase> GetIntersectItemsDirect(WorldItemBase worldItem, Type type)
 		{
 			var worldItemRect = worldItem.Position;
 			var list = new List<WorldItemBase>();
 
 			foreach (var item in Items)
 			{
-				if (item.Id != worldItem.Id)
+				if (type == null || item.GetType().Name == type.Name)
 				{
-					var itemRect = item.Position;
+					if (item.Id != worldItem.Id)
+					{
+						var itemRect = item.Position;
 
-					if (worldItemRect.IntersectsWith(itemRect))
-						list.Add(item);
+						if (worldItemRect.IntersectsWith(itemRect))
+							list.Add(item);
+					}
 				}
 			}
 

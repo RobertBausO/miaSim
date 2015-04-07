@@ -56,53 +56,30 @@ namespace miaSim.Foundation
 			}
 		}
 
-		public IList<WorldItemBase> GetIntersects(WorldItemBase item)
+		public IList<WorldItemBase> GetIntersects(WorldItemBase item, Type type)
 		{
 			var list = new List<WorldItemBase>();
 			var worldRect = item.Position;
 			var mapRect = World2Map(worldRect);
 
 			// find intersections
-			//var candidates = GetCandidatesByOutbound(mapRect);
 			var candidates = GetCandidatesByFullScan(mapRect);
 
 			foreach (var candidate in candidates.Values)
 			{
-				if (candidate.Id != item.Id)
+				if (type == null || candidate.GetType().Name == type.Name)
 				{
-					var candidateRect = candidate.Position;
+					if (candidate.Id != item.Id)
+					{
+						var candidateRect = candidate.Position;
 
-					if (candidateRect.IntersectsWith(worldRect))
-						list.Add(candidate);
+						if (candidateRect.IntersectsWith(worldRect))
+							list.Add(candidate);
+					}
 				}
 			}
 
 			return list;
-		}
-
-		private Dictionary<long, WorldItemBase> GetCandidatesByOutbound(Rect mapRect)
-		{
-			var candidates = new Dictionary<long, WorldItemBase>();
-
-			var outboundRect = new Rect(new Point(Adjust((int)mapRect.Left - 1), Adjust((int)mapRect.Top + 1)),
-				new Point(Adjust((int)mapRect.Right + 1), Adjust((int)mapRect.Bottom - 1)));
-
-			// scan the outbound line of the rect
-			var action = new Action<Dictionary<long, WorldItemBase>>(dict => MergeDictionaries(candidates, dict));
-
-			// top
-			ForEachMapEntry(new Rect(new Point(outboundRect.Left, outboundRect.Top), new Point(outboundRect.Right, outboundRect.Top)), action);
-
-			// left
-			ForEachMapEntry(new Rect(new Point(outboundRect.Left, outboundRect.Top), new Point(outboundRect.Left, outboundRect.Bottom)), action);
-
-			// right
-			ForEachMapEntry(new Rect(new Point(outboundRect.Right, outboundRect.Top), new Point(outboundRect.Right, outboundRect.Bottom)), action);
-
-			// bottom
-			ForEachMapEntry(new Rect(new Point(outboundRect.Left, outboundRect.Bottom), new Point(outboundRect.Right, outboundRect.Bottom)), action);
-
-			return candidates;
 		}
 
 		private Dictionary<long, WorldItemBase> GetCandidatesByFullScan(Rect mapRect)

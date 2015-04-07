@@ -82,7 +82,7 @@ namespace miaSim.Plants
 			{
 				Rect oldPosition = Position;
 
-				var intersects = WorldInteraction.GetIntersectItems(this);
+				var intersects = WorldInteraction.GetIntersectItems(this, null);
 
 				var intersectOnTop = false;
 				var intersectOnBottom = false;
