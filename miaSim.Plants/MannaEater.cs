@@ -67,7 +67,7 @@ namespace miaSim.Plants
 		public static WorldItemBase CreateRandomized(WorldItemBaseIteraction interaction)
 		{
 			var dns = new MannaEaterDns();
-			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
+			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(2*dns.MinExtension, 2*dns.MinExtension));
 			return new MannaEater(interaction, position, dns);
 		}
 
@@ -95,9 +95,9 @@ namespace miaSim.Plants
 					}
 				}
 
-				//this.ChangeSize(-0.00001);
+				this.ChangeSize(-0.01);
 
-				if (Position.Width < mDns.MinExtension || Position.Height < mDns.MinExtension)
+				if (Position.Width < mDns.MinExtension/2.0 || Position.Height < mDns.MinExtension/2.0)
 				{
 					WorldInteraction.RemoveItem(this);
 				}
