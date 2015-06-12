@@ -17,20 +17,20 @@ namespace miaSim.Plants
 		{
 			MinExtension = 0.01;
 
-			MinGrowPerCycle = 0.00001f;
-			MaxGrowPerCylce = 0.0001f;
+			MinPercentageGrowPerCycle = 2.5 / 100.0;
+			MaxPercentageGrowPerCylce = 5.0 / 100.0;
 
-			GrowPerCylce = Utils.NextRandom(MinGrowPerCycle, MaxGrowPerCylce);
+			PercentageGrowPerCylce = Utils.NextRandom(MinPercentageGrowPerCycle, MaxPercentageGrowPerCylce);
 		}
 
 		// fix definitions
 		public double MinExtension { get; set; }
 
-		public double MinGrowPerCycle { get; set; }
-		public double MaxGrowPerCylce { get; set; }
+		public double MinPercentageGrowPerCycle { get; set; }
+		public double MaxPercentageGrowPerCylce { get; set; }
 
 		// individual settings
-		public double GrowPerCylce { get; set; }
+		public double PercentageGrowPerCylce { get; set; }
 	}
 
 	/// <summary>
@@ -42,7 +42,6 @@ namespace miaSim.Plants
 
 		// DNS properties
 		private MannaDns mDns;
-		private IList<WorldItemBase> mConnections;
 
 		#endregion
 
@@ -72,12 +71,12 @@ namespace miaSim.Plants
 		{
 			Rect oldPosition = Position;
 
-			var intersects = WorldInteraction.GetIntersectItems(this, typeof(Manna));
-
 			var intersectOnTop = false;
 			var intersectOnBottom = false;
 			var intersectOnLeft = false;
 			var intersectOnRight = false;
+
+			var intersects = WorldInteraction.GetIntersectItems(this, typeof(Manna));
 
 			var left = Position.Left;
 			var right = Position.Right;
@@ -104,24 +103,27 @@ namespace miaSim.Plants
 					intersectOnRight = true;
 			}
 
+			double widthDiff = Position.Width * mDns.PercentageGrowPerCylce;
+			double heightDiff = Position.Height * mDns.PercentageGrowPerCylce;
+
 			if (!intersectOnTop)
 			{
-				top -= mDns.MaxGrowPerCylce;
+				top -= heightDiff / 2;
 			}
 
 			if (!intersectOnBottom)
 			{
-				bottom += mDns.MaxGrowPerCylce;
+				bottom += heightDiff / 2;
 			}
 
 			if (!intersectOnLeft)
 			{
-				left -= mDns.MaxGrowPerCylce;
+				left -= widthDiff / 2;
 			}
 
 			if (!intersectOnRight)
 			{
-				right += mDns.MaxGrowPerCylce;
+				right += widthDiff / 2;
 			}
 
 			Position = new Rect(new Point(left, top), new Point(right, bottom));
@@ -129,6 +131,12 @@ namespace miaSim.Plants
 			if (!PositionOk())
 			{
 				Position = oldPosition;
+			}
+
+			// die when smaller than min area
+			if (Area() < mDns.MinExtension*mDns.MinExtension)
+			{
+				WorldInteraction.RemoveItem(this);
 			}
 		}
 

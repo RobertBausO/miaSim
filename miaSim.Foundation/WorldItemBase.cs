@@ -1,6 +1,5 @@
-﻿using miaGame;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using miaGame;
 using System.Windows;
 
 namespace miaSim.Foundation
@@ -50,11 +49,19 @@ namespace miaSim.Foundation
 		public abstract void Draw(PaintContext paintInfo);
 		public abstract void Tell(Message message);
 
+		/// <summary>
+		/// calculates the center of the item
+		/// </summary>
+		/// <returns></returns>
 		public Point CalcCenter()
 		{
 			return new Point(Position.Left + Position.Width / 2.0, Position.Top + Position.Height / 2.0);
 		}
 
+		/// <summary>
+		/// checks whether the position is ok or not
+		/// </summary>
+		/// <returns></returns>
 		public bool PositionOk()
 		{
 			var left = Position.Left;
@@ -87,6 +94,20 @@ namespace miaSim.Foundation
 		}
 
 
+		public virtual bool ChangeArea(double factor)
+		{
+			var sqrtFactor = Math.Sqrt(factor);
+			var w = Position.Width * sqrtFactor;
+			var h = Position.Height * sqrtFactor;
+
+			return SetSize(w, h);
+		}
+
+		/// <summary>
+		/// change size relative
+		/// </summary>
+		/// <param name="factor"></param>
+		/// <returns></returns>
 		public virtual bool ChangeSize(double factor)
 		{
 			var w = Position.Width * factor;
@@ -95,25 +116,26 @@ namespace miaSim.Foundation
 			return ChangeSize(w, h);
 		}
 
+		/// <summary>
+		/// change size absolute
+		/// </summary>
+		/// <param name="widthDiff"></param>
+		/// <param name="heightDiff"></param>
+		/// <returns></returns>
 		public virtual bool ChangeSize(double widthDiff, double heightDiff)
 		{
-			var oldPos = Position;
+			var newWidth = Position.Width + widthDiff;
+			var newHeight = Position.Height + heightDiff;
 
-			var w = widthDiff / 2.0;
-			var h = heightDiff / 2.0;
-
-			Position = new Rect(new Point(Position.Left - w, Position.Top - h), 
-								new Point(Position.Right + w, Position.Bottom + h));
-
-			if (!PositionOk())
-			{
-				Position = oldPos;
-				return false;
-			}
-
-			return true;
+			return SetSize(newWidth, newHeight);
 		}
 
+		/// <summary>
+		/// Set new size relative to the center of the item
+		/// </summary>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		/// <returns></returns>
 		public virtual bool SetSize(double width, double height)
 		{
 			var oldPos = Position;
@@ -135,6 +157,57 @@ namespace miaSim.Foundation
 			return true;
 		}
 
+		/// <summary>
+		/// Robber eats a part of the victim
+		/// </summary>
+		/// <param name="victim"></param>
+		/// <param name="robber"></param>
+		/// <param name="taken"></param>
+		/// <param name="received"></param>
+		/// <returns></returns>
+		public static bool MoveArea(WorldItemBase victim, WorldItemBase robber, double taken)
+		{
+			Rect orgVictimRect = victim.Position;
+			double orgVictimArea = victim.Area();
+
+			if (victim.ChangeArea(1 - taken))
+			{
+				double newVictimArea = victim.Area();
+
+				double takenArea = orgVictimArea - newVictimArea;
+
+				double receivedArea = takenArea;
+
+				// h' = SQRT((h*adiff + w*h*h)w)
+				double newHeight = Math.Sqrt(((receivedArea + robber.Position.Width * robber.Position.Height) * robber.Position.Height) / robber.Position.Width);
+
+				// w' = (w/h) * h'
+				double newWidth = (robber.Position.Width / robber.Position.Height) * newHeight;
+
+				if (robber.SetSize(newWidth, newHeight))
+				{
+					return true;
+				}
+
+				victim.Position = orgVictimRect;
+				return false;
+			}
+
+			return false;
+		}
+
+		public double Area()
+		{
+			return Position.Width*Position.Height;
+		}
+
+
+		/// <summary>
+		/// move when possible
+		/// </summary>
+		/// <param name="xee"></param>
+		/// <param name="yps"></param>
+		/// <returns></returns>
 		public virtual bool Move(double xee, double yps)
 		{
 			var oldPos = Position;

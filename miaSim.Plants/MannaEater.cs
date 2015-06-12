@@ -17,11 +17,15 @@ namespace miaSim.Plants
 		{
 			MinExtension = 0.01;
 			MaxExtension = 0.1;
+
+			MaxMovement = 0.001;
 		}
 
 		// fix definitions
 		public double MinExtension { get; private set; }
 		public double MaxExtension { get; private set; }
+
+		public double MaxMovement { get; private set; }
 
 	}
 
@@ -35,16 +39,17 @@ namespace miaSim.Plants
 		// DNS properties
 		private MannaEaterDns mDns;
 
-		private IList<WorldItemBase> mConnections;
+		private Vector mMovement;
 
 		#endregion
 
 		#region ================== Constructor/Destructor ===================
 
-		public MannaEater(WorldItemBaseIteraction interaction, Rect position, MannaEaterDns dns)
+		public MannaEater(WorldItemBaseIteraction interaction, Rect position, Vector movement, MannaEaterDns dns)
 			: base(interaction, "MannaEater", position)
 		{
 			mDns = dns;
+			mMovement = movement;
 		}
 
 		#endregion
@@ -68,38 +73,60 @@ namespace miaSim.Plants
 		{
 			var dns = new MannaEaterDns();
 			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(2*dns.MinExtension, 2*dns.MinExtension));
-			return new MannaEater(interaction, position, dns);
+			var movement = new Vector(Utils.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0), Utils.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0));
+
+			return new MannaEater(interaction, position, movement, dns);
 		}
 
 		public override void Update()
 		{
-			Rect oldPosition = Position;
-
+			// smaller than max size
 			if (Position.Width < mDns.MaxExtension && Position.Height < mDns.MaxExtension)
 			{
+				double area = this.Area();
+
 				// eat
-				var intersects = WorldInteraction.GetIntersectItems(this, typeof(Manna));
+				var intersects = WorldInteraction.GetIntersectItems(this, null); 
 
 				foreach (var intersect in intersects)
 				{
-					var manna = intersect as Manna;
+					var partTaken = 0.0;
 
-					// get 1% of the manna size
-					var part = 0.1;
-					var widthTransfer = Math.Min(manna.Position.Width, this.Position.Width) * part;
-					var heightTransfer = Math.Min(manna.Position.Height, this.Position.Height) * part;
-
-					if (manna.ChangeSize(-widthTransfer, -heightTransfer))
+					if (intersect is Manna)
 					{
-						this.ChangeSize(widthTransfer, heightTransfer);
+						// get % of the manna size
+						partTaken = 15.0 / 100.0;
+					}
+
+					if (intersect is MannaEater)
+					{
+						// only the bigger one can eat the smaller one
+						if (area > intersect.Area())
+						{
+							// cannibalism included
+							partTaken = 5.0 / 100.0;
+						}
+					}
+
+					if (partTaken > 0.0)
+					{
+						MoveArea(intersect, this, partTaken);
 					}
 				}
 
-				this.ChangeSize(-0.01);
+				// shrink
+				ChangeSize(-0.0001);
 
-				if (Position.Width < mDns.MinExtension/2.0 || Position.Height < mDns.MinExtension/2.0)
+				if (Area() <  mDns.MinExtension * mDns.MinExtension)
 				{
 					WorldInteraction.RemoveItem(this);
+				}
+
+				// move
+				if (!Move(mMovement.X, mMovement.Y))
+				{
+					var newMovement = new Vector(Utils.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0), Utils.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0));
+					mMovement = newMovement;
 				}
 			}
 			else
@@ -117,7 +144,11 @@ namespace miaSim.Plants
 			var newItem = CreateRandomized(WorldInteraction) as MannaEater;
 			newItem.Position = Position;
 			newItem.SetSize(mDns.MinExtension, mDns.MinExtension);
-			newItem.Move(Utils.NextRandom(Position.Left, Position.Right), Utils.NextRandom(Position.Top, Position.Bottom));
+
+			double moveLeft = Position.Right - (Utils.NextRandom(Position.Left, Position.Right));
+			double moveDown = Position.Bottom - Utils.NextRandom(Position.Top, Position.Bottom);
+
+			newItem.Move(moveLeft, moveDown);
 			return newItem;
 		}
 

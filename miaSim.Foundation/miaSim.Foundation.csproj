@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntersectionMap.cs" />
-    <Compile Include="IWorldItemIteraction.cs" />
+    <Compile Include="WorldItemIteraction.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WorldItemBase.cs" />
