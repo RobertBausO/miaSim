@@ -1,10 +1,9 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
-using System.Collections.Generic;
 
 using miaGame;
 using miaSim.Foundation;
+using miaSim.Tools;
 
 namespace miaSim.Plants
 {
@@ -20,7 +19,7 @@ namespace miaSim.Plants
 			MinPercentageGrowPerCycle = 2.5 / 100.0;
 			MaxPercentageGrowPerCylce = 5.0 / 100.0;
 
-			PercentageGrowPerCylce = Utils.NextRandom(MinPercentageGrowPerCycle, MaxPercentageGrowPerCylce);
+			PercentageGrowPerCylce = SimRandom.NextRandom(MinPercentageGrowPerCycle, MaxPercentageGrowPerCylce);
 		}
 
 		// fix definitions
@@ -47,7 +46,7 @@ namespace miaSim.Plants
 
 		#region ================== Constructor/Destructor ===================
 
-		public Manna(WorldItemBaseIteraction interaction, Rect position, MannaDns dns)
+		public Manna(IWorldItemBaseIteraction interaction, Rect position, MannaDns dns)
 			: base(interaction, "Manna", position)
 		{
 			mDns = dns;
@@ -60,10 +59,10 @@ namespace miaSim.Plants
 
 		#region ================== Methods ==================================
 
-		public static WorldItemBase CreateRandomized(WorldItemBaseIteraction interaction)
+		public static WorldItemBase CreateRandomized(IWorldItemBaseIteraction interaction)
 		{
 			var dns = new MannaDns();
-			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
+			var position = new Rect(new Point(SimRandom.NextRandom(), SimRandom.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
 			return new Manna(interaction, position, dns);
 		}
 

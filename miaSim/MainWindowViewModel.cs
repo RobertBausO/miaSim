@@ -7,7 +7,7 @@ using System.Threading;
 using miaGame;
 using miaSim.Annotations;
 using miaSim.Foundation;
-using miaSim.Plants;
+using miaSim.Tools;
 
 namespace miaSim
 {
@@ -17,14 +17,13 @@ namespace miaSim
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private const int NumberOfInitItems = 1000;
-
+		private List<Szene> mSzenes;
 		private readonly GameCanvas mCanvas;
 
 		private double mWorldThrottleInMs;
 		private double mUpdateViewEachXUpdate;
 
-		private readonly World mWorld;
+		private World mWorld;
 		private int mCylceCount;
 
 		#endregion
@@ -38,15 +37,7 @@ namespace miaSim
 
 			mCanvas = canvas;
 
-			var list = new List<Func<WorldItemBaseIteraction, WorldItemBase>> { Manna.CreateRandomized, MannaEater.CreateRandomized };
-			
-			mWorld = World.Create(NumberOfInitItems, list);
-			mWorld.UpdateDone += OnWorldUpdateDone;
-			mCylceCount = 0;
-			mCanvas.Init(new Painter(mWorld));
-
-			// Big bang
-			mWorld.Start();
+			Szenes = Plants.Szenes.GetSzeneList();
 		}
 
 		#endregion
@@ -66,7 +57,7 @@ namespace miaSim
 
 		}
 
-        public double UpdateViewEachXUpdate
+		public double UpdateViewEachXUpdate
 		{
 			get { return mUpdateViewEachXUpdate; }
 
@@ -79,9 +70,42 @@ namespace miaSim
 
 		}
 
+
+		public List<Szene> Szenes
+		{
+			get { return mSzenes; }
+			set
+			{
+				if (value == mSzenes) return;
+				mSzenes = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public Szene SelectedSzene { get; set; }
+
 		#endregion
 
 		#region ================== Methods ==================================
+
+		public void Start(Szene szene)
+		{
+			if (mWorld != null)
+			{
+				mWorld.UpdateDone -= OnWorldUpdateDone;
+				mWorld.Stop();
+				mWorld = null;
+			}
+
+			mWorld = new World(szene);
+			mWorld.UpdateDone += OnWorldUpdateDone;
+			mCylceCount = 0;
+			mCanvas.Init(new Painter(mWorld));
+
+			// Big bang
+			mWorld.Start();
+		}
+
 
 		void OnWorldUpdateDone(World obj)
 		{
@@ -89,12 +113,12 @@ namespace miaSim
 			if ((int)WorldThrottleInMs > 0)
 				Thread.Sleep((int)WorldThrottleInMs);
 
-			if (mCylceCount%(int) UpdateViewEachXUpdate == 0)
+			if (mCylceCount % (int)UpdateViewEachXUpdate == 0)
 			{
 				var text = new StringBuilder();
 				text.Append("WorldUpdateCycles = " + mCylceCount);
 				text.Append(Environment.NewLine);
-				text.Append("WorldUpdatesPerSecond = " + Utils.Double2String(obj.LoopsPerSecond));
+				text.Append("WorldUpdatesPerSecond = " + Conversion.Double2String(obj.LoopsPerSecond));
 				text.Append(Environment.NewLine);
 				text.Append("WorldThrottleInMs = " + (int)WorldThrottleInMs);
 				text.Append(Environment.NewLine);
@@ -103,7 +127,7 @@ namespace miaSim
 
 				var dict = new Dictionary<string, int>();
 
-				foreach(var item in mWorld.Items)
+				foreach (var item in mWorld.Items)
 				{
 					var typeName = item.GetType().Name;
 
@@ -115,7 +139,7 @@ namespace miaSim
 					dict[typeName]++;
 				}
 
-				foreach(var type in dict.Keys)
+				foreach (var type in dict.Keys)
 				{
 					text.Append(string.Format("Type={0}; Count ={1}", type, dict[type]));
 					text.Append(Environment.NewLine);

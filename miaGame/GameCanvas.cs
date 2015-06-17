@@ -14,11 +14,6 @@ namespace miaGame
 		#endregion
 
 		#region ================== Constructor/Destructor ===================
-
-		public GameCanvas()
-		{
-		}
-
 		#endregion
 
 		#region ================== Properties ===============================

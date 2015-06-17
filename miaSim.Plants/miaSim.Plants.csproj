@@ -45,6 +45,7 @@
     <Compile Include="MannaEater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BrainCell.cs" />
+    <Compile Include="Szenes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\miaGame\miaGame.csproj">
@@ -54,6 +55,10 @@
     <ProjectReference Include="..\miaSim.Foundation\miaSim.Foundation.csproj">
       <Project>{fba29631-61c8-480a-9251-f3f54abf0d1c}</Project>
       <Name>miaSim.Foundation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\miaSim.Tools\miaSim.Tools.csproj">
+      <Project>{c0a68509-82ea-404a-babf-503cea43e922}</Project>
+      <Name>miaSim.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

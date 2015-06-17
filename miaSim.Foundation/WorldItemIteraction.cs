@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace miaSim.Foundation
 {
-	public interface WorldItemBaseIteraction
+	public interface IWorldItemBaseIteraction
 	{
 		IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem, Type type);
 

@@ -6,8 +6,17 @@ namespace miaGame
 {
 	public class PaintContext
 	{
+		#region ================== Member variables =========================
+
 		private double mWorld2ScreenXee;
 		private double mWorld2ScreenYps;
+
+		#endregion
+
+		#region ================== Constructor/Destructor ===================
+		#endregion
+
+		#region ================== Properties ===============================
 
 		public double WorldSizeXee { get; private set; }
 		public double WorldSizeYps { get; private set; }
@@ -17,6 +26,10 @@ namespace miaGame
 
 		public DrawingContext Context { get; private set; }
 		public Canvas Canvas { get; private set; }
+
+		#endregion
+
+		#region ================== Methods ==================================
 
 		public PaintContext(double screenWidth, double screenHeight, Canvas canvas, DrawingContext context)
 		{
@@ -50,9 +63,9 @@ namespace miaGame
 
 		public Rect World2Screen(Rect worldRect)
 		{
-			return new Rect(World2ScreenXee(worldRect.Left), 
-								World2ScreenYps(worldRect.Top), 
-								World2ScreenXee(worldRect.Width), 
+			return new Rect(World2ScreenXee(worldRect.Left),
+								World2ScreenYps(worldRect.Top),
+								World2ScreenXee(worldRect.Width),
 								World2ScreenYps(worldRect.Height));
 		}
 
@@ -143,6 +156,12 @@ namespace miaGame
 
 			Context.DrawLine(new Pen(brush, World2ScreenXee(0.001f)), a, b);
 		}
+
+		#endregion
+
+        
+
+
 
 	}
 }

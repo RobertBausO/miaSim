@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
-using System.Windows;
 
-namespace miaSim.Foundation
+namespace miaSim.Tools
 {
-	public static class Utils
+	public static class SimRandom
 	{
 		#region ================== Member variables =========================
 
@@ -20,11 +19,6 @@ namespace miaSim.Foundation
 		#endregion
 
 		#region ================== Methods ==================================
-
-		public static string Double2String(double value)
-		{
-			return value.ToString("0.000");
-		}
 
 		public static double NextRandom()
 		{

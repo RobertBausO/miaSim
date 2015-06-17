@@ -12,12 +12,14 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <miaGame:GameCanvas  Grid.Column="0" Grid.Row="0" x:Name="gameCanvas" />
+        <miaGame:GameCanvas  Grid.Column="0" Grid.Row="1" x:Name="gameCanvas" />
 
-        <Slider Grid.Column="1" Orientation="Vertical" ToolTip="Throttle world (ms)" Minimum="0" Maximum="1000" Value="{Binding Path=WorldThrottleInMs}"/>
-        <Slider Grid.Column="2" Orientation="Vertical" ToolTip="UpdateView each x-cylce" Minimum="1" Maximum="100" Value="{Binding Path=UpdateViewEachXUpdate}"/>
-        
+        <Slider Grid.Column="1" Grid.Row="1" Orientation="Vertical" ToolTip="Throttle world (ms)" Minimum="0" Maximum="1000" Value="{Binding Path=WorldThrottleInMs}"/>
+        <Slider Grid.Column="2" Grid.Row="1" Orientation="Vertical" ToolTip="UpdateView each x-cylce" Minimum="1" Maximum="100" Value="{Binding Path=UpdateViewEachXUpdate}"/>
+
+        <ListBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ItemsSource="{Binding Szenes}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedSzene}" MouseDoubleClick="OnListBoxSzenesMouseDoubleClick"  />
     </Grid>
 </Window>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using miaGame.Tools;
+using miaSim.Tools;
 
 namespace miaSim.Foundation
 {
-	public class World : WorldItemBaseIteraction
+	public class World : IWorldItemBaseIteraction
 	{
 		#region ================== Member variables =========================
 
@@ -15,6 +15,7 @@ namespace miaSim.Foundation
 		private readonly object mWorldItemLock = new object();
 		private Thread mWorker;
 		private readonly StopwatchStatistic mLoopStatistic;
+		private bool mIsStopped = false;
 
 		private IntersectionMap mMap = new IntersectionMap(20);
 
@@ -22,11 +23,9 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		private World()
+		public World(Szene szene)
 		{
 			UpdateLock = new object();
-
-			mWorldItems = new List<WorldItemBase>();
 
 			mLoopStatistic = new StopwatchStatistic(25, s =>
 			{
@@ -34,6 +33,8 @@ namespace miaSim.Foundation
 			});
 
 			LoopsPerSecond = 0.0;
+
+			mWorldItems = szene.CreateItems(this);
 		}
 
 		#endregion
@@ -58,25 +59,6 @@ namespace miaSim.Foundation
 		/// </summary>
 		public object UpdateLock { get; private set; }
 
-		/// <summary>
-		/// create a world (random)
-		/// </summary>
-		/// <returns></returns>
-		public static World Create(int numberOfItems, IList<Func<WorldItemBaseIteraction, WorldItemBase>> factories)
-		{
-			var newWorld = new World();
-
-			for (int itemIdx = 0; itemIdx < numberOfItems; itemIdx++)
-			{
-				var itemTypeIndex = Utils.Next(0, factories.Count - 1);
-				var item = factories[itemTypeIndex](newWorld);
-
-				newWorld.AddItem(item);
-			}
-
-			return newWorld;
-		}
-
 		public void AddItem(WorldItemBase newItem)
 		{
 			mWorldItems.Add(newItem);
@@ -89,8 +71,15 @@ namespace miaSim.Foundation
 
 		public void Start()
 		{
+			mIsStopped = false;
 			mWorker = new Thread(WorkLoop) { IsBackground = true };
 			mWorker.Start();
+		}
+
+		public void Stop()
+		{
+			mIsStopped = true;
+			mWorker.Join();
 		}
 
 		private bool mUseIntersectionMap = true;
@@ -140,7 +129,7 @@ namespace miaSim.Foundation
 					UpdateDone(this);
 				}
 
-			} while (true);
+			} while (!mIsStopped);
 		}
 
 

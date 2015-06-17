@@ -1,10 +1,9 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
-using System.Collections.Generic;
 
 using miaGame;
 using miaSim.Foundation;
+using miaSim.Tools;
 
 namespace miaSim.Plants
 {
@@ -45,7 +44,7 @@ namespace miaSim.Plants
 
 		#region ================== Constructor/Destructor ===================
 
-		public MannaEater(WorldItemBaseIteraction interaction, Rect position, Vector movement, MannaEaterDns dns)
+		public MannaEater(IWorldItemBaseIteraction interaction, Rect position, Vector movement, MannaEaterDns dns)
 			: base(interaction, "MannaEater", position)
 		{
 			mDns = dns;
@@ -69,11 +68,11 @@ namespace miaSim.Plants
 
 		#region ================== Methods ==================================
 
-		public static WorldItemBase CreateRandomized(WorldItemBaseIteraction interaction)
+		public static WorldItemBase CreateRandomized(IWorldItemBaseIteraction interaction)
 		{
 			var dns = new MannaEaterDns();
-			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(2*dns.MinExtension, 2*dns.MinExtension));
-			var movement = new Vector(Utils.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0), Utils.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0));
+			var position = new Rect(new Point(SimRandom.NextRandom(), SimRandom.NextRandom()), new Size(2*dns.MinExtension, 2*dns.MinExtension));
+			var movement = new Vector(SimRandom.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0), SimRandom.NextRandom(-dns.MaxMovement / 2.0, dns.MaxMovement / 2.0));
 
 			return new MannaEater(interaction, position, movement, dns);
 		}
@@ -125,7 +124,7 @@ namespace miaSim.Plants
 				// move
 				if (!Move(mMovement.X, mMovement.Y))
 				{
-					var newMovement = new Vector(Utils.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0), Utils.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0));
+					var newMovement = new Vector(SimRandom.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0), SimRandom.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0));
 					mMovement = newMovement;
 				}
 			}
@@ -145,8 +144,8 @@ namespace miaSim.Plants
 			newItem.Position = Position;
 			newItem.SetSize(mDns.MinExtension, mDns.MinExtension);
 
-			double moveLeft = Position.Right - (Utils.NextRandom(Position.Left, Position.Right));
-			double moveDown = Position.Bottom - Utils.NextRandom(Position.Top, Position.Bottom);
+			double moveLeft = Position.Right - (SimRandom.NextRandom(Position.Left, Position.Right));
+			double moveDown = Position.Bottom - SimRandom.NextRandom(Position.Top, Position.Bottom);
 
 			newItem.Move(moveLeft, moveDown);
 			return newItem;

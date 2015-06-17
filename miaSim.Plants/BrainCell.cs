@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using miaGame;
 using miaSim.Foundation;
+using miaSim.Tools;
 
 
 namespace miaSim.Plants
@@ -20,7 +21,7 @@ namespace miaSim.Plants
 			MinGrowPerCycle = 0.00001f;
 			MaxGrowPerCylce = 0.0001f;
 
-			GrowPerCylce = Utils.NextRandom(MinGrowPerCycle, MaxGrowPerCylce);
+			GrowPerCylce = SimRandom.NextRandom(MinGrowPerCycle, MaxGrowPerCylce);
 
 		}
 
@@ -51,7 +52,7 @@ namespace miaSim.Plants
 
 		#region ================== Constructor/Destructor ===================
 
-		public BrainCell(WorldItemBaseIteraction interaction, Rect position, BrainCellDns dns, int load)
+		public BrainCell(IWorldItemBaseIteraction interaction, Rect position, BrainCellDns dns, int load)
 			: base(interaction, "BrainCell", position)
 		{
 			Load = load;
@@ -68,11 +69,11 @@ namespace miaSim.Plants
 
 		#region ================== Methods ==================================
 
-		public static WorldItemBase CreateRandomized(WorldItemBaseIteraction interaction)
+		public static WorldItemBase CreateRandomized(IWorldItemBaseIteraction interaction)
 		{
 			var dns = new BrainCellDns();
-			var position = new Rect(new Point(Utils.NextRandom(), Utils.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
-			return new BrainCell(interaction, position, dns, Utils.Next(0,100) < 10 ? 1: 0);
+			var position = new Rect(new Point(SimRandom.NextRandom(), SimRandom.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
+			return new BrainCell(interaction, position, dns, SimRandom.Next(0,100) < 10 ? 1: 0);
 		}
 
 		public override void Update()
@@ -150,7 +151,7 @@ namespace miaSim.Plants
 			{
 				if (Load > 0)
 				{
-					var connectionId = Utils.Next(0, mConnections.Count - 1);
+					var connectionId = SimRandom.Next(0, mConnections.Count - 1);
 					mConnections[connectionId].Tell(new Message(this, COMMAND_TRANSFER_LOAD));
 				}
 			}

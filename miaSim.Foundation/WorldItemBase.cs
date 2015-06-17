@@ -1,6 +1,7 @@
 ﻿using System;
 using miaGame;
 using System.Windows;
+using miaSim.Tools;
 
 namespace miaSim.Foundation
 {
@@ -15,7 +16,7 @@ namespace miaSim.Foundation
 
 		#region ================== Constructor/Destructor ===================
 
-		protected WorldItemBase(WorldItemBaseIteraction worldInteraction, string type, Rect position)
+		protected WorldItemBase(IWorldItemBaseIteraction worldInteraction, string type, Rect position)
 		{
 			lock (NextIdLock)
 			{
@@ -32,7 +33,7 @@ namespace miaSim.Foundation
 
 		#region ================== Properties ===============================
 
-		public WorldItemBaseIteraction WorldInteraction { get; private set; }
+		public IWorldItemBaseIteraction WorldInteraction { get; private set; }
 
 		public string Type { get; private set; }
 		public long Id { get; private set; }
@@ -89,7 +90,7 @@ namespace miaSim.Foundation
 
 		public virtual string GetDisplayText()
 		{
-			var position = string.Format("{0}/{1}/{2}/{3}", Utils.Double2String(Position.Left), Utils.Double2String(Position.Top), Utils.Double2String(Position.Right), Utils.Double2String(Position.Bottom));
+			var position = string.Format("{0}/{1}/{2}/{3}", Conversion.Double2String(Position.Left), Conversion.Double2String(Position.Top), Conversion.Double2String(Position.Right), Conversion.Double2String(Position.Bottom));
 			return string.Format("{0}-{1}:{2}", Id, Type, position);
 		}
 

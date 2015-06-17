@@ -6,7 +6,7 @@ namespace miaSim.Test.Mocks
 {
 	internal class WorldItem : WorldItemBase
 	{
-		public WorldItem(WorldItemBaseIteraction worldInteraction, string type, Rect position) : base(worldInteraction, type, position)
+		public WorldItem(IWorldItemBaseIteraction worldInteraction, string type, Rect position) : base(worldInteraction, type, position)
 		{
 		}
 

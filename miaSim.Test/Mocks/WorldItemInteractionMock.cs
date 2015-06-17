@@ -4,7 +4,7 @@ using miaSim.Foundation;
 
 namespace miaSim.Test.Stubs
 {
-	internal class WorldItemInteractionMock : WorldItemBaseIteraction
+	internal class WorldItemInteractionMock : IWorldItemBaseIteraction
 	{
 		public IList<WorldItemBase> GetIntersectItems(WorldItemBase worldItem, Type type)
 		{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace miaGame.Tools
+namespace miaSim.Tools
 {
 	/// <summary>
 	/// Only for time measurement

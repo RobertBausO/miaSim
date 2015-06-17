@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace miaGame.Tools
+namespace miaSim.Tools
 {
     public static class DebugOut
     {

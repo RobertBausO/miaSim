@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using miaGame;
 using miaSim.Foundation;
 using System.Collections.Generic;

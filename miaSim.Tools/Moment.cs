@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace miaGame.Tools
+namespace miaSim.Tools
 {
     public class Moment
     {
