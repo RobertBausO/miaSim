@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Windows.Input;
 using miaGame;
 using miaSim.Annotations;
 using miaSim.Foundation;
@@ -26,6 +27,10 @@ namespace miaSim
 		private World mWorld;
 		private int mCylceCount;
 
+		private readonly RelayCommand<object> mNextStepCommand;
+
+		private AutoResetEvent mNextStepEvent = new AutoResetEvent(false);
+
 		#endregion
 
 		#region ================== Constructor/Destructor ===================
@@ -33,7 +38,9 @@ namespace miaSim
 		public MainWindowViewModel(GameCanvas canvas)
 		{
 			WorldThrottleInMs = 0;
-			UpdateViewEachXUpdate = 5;
+			UpdateViewEachXUpdate = 1;
+
+			mNextStepCommand = new RelayCommand<object>(DoNextStep);
 
 			mCanvas = canvas;
 
@@ -43,6 +50,11 @@ namespace miaSim
 		#endregion
 
 		#region ================== Properties ===============================
+
+		public double MaxThrottleInMs
+		{
+			get { return 1000; }
+		}
 
 		public double WorldThrottleInMs
 		{
@@ -70,7 +82,6 @@ namespace miaSim
 
 		}
 
-
 		public List<Szene> Szenes
 		{
 			get { return mSzenes; }
@@ -83,6 +94,11 @@ namespace miaSim
 		}
 
 		public Szene SelectedSzene { get; set; }
+
+		public ICommand DoNextStepCommand
+		{
+			get { return mNextStepCommand; }
+		}
 
 		#endregion
 
@@ -110,8 +126,17 @@ namespace miaSim
 		void OnWorldUpdateDone(World obj)
 		{
 			mCylceCount++;
-			if ((int)WorldThrottleInMs > 0)
-				Thread.Sleep((int)WorldThrottleInMs);
+
+			if (WorldThrottleInMs == MaxThrottleInMs)
+			{
+				// wait for click
+				mNextStepEvent.WaitOne();
+			}
+			else
+			{
+				if ((int)WorldThrottleInMs > 0)
+					Thread.Sleep((int)WorldThrottleInMs);
+			}
 
 			if (mCylceCount % (int)UpdateViewEachXUpdate == 0)
 			{
@@ -149,6 +174,11 @@ namespace miaSim
 
 				mCanvas.Update();
 			}
+		}
+
+		private void DoNextStep(object param)
+		{
+			mNextStepEvent.Set();
 		}
 
 		[NotifyPropertyChangedInvocator]

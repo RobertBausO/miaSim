@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 
 using miaGame;
@@ -14,19 +15,12 @@ namespace miaSim.Plants
 	{
 		public MannaDns()
 		{
-			MinExtension = 0.01;
-
-			MinPercentageGrowPerCycle = 2.5 / 100.0;
-			MaxPercentageGrowPerCylce = 5.0 / 100.0;
-
-			PercentageGrowPerCylce = SimRandom.NextRandom(MinPercentageGrowPerCycle, MaxPercentageGrowPerCylce);
+			StartExtension = 0.001;
+			PercentageGrowPerCylce = 0.5 / 100.0;
 		}
 
 		// fix definitions
-		public double MinExtension { get; set; }
-
-		public double MinPercentageGrowPerCycle { get; set; }
-		public double MaxPercentageGrowPerCylce { get; set; }
+		public double StartExtension { get; set; }
 
 		// individual settings
 		public double PercentageGrowPerCylce { get; set; }
@@ -62,81 +56,102 @@ namespace miaSim.Plants
 		public static WorldItemBase CreateRandomized(IWorldItemBaseIteraction interaction)
 		{
 			var dns = new MannaDns();
-			var position = new Rect(new Point(SimRandom.NextRandom(), SimRandom.NextRandom()), new Size(dns.MinExtension, dns.MinExtension));
+			var position = new Rect(
+				new Point(SimRandom.NextRandom(0.0, 1 - dns.StartExtension), SimRandom.NextRandom(0.0, 1 - dns.StartExtension)), 
+				new Size(dns.StartExtension, dns.StartExtension));
 			return new Manna(interaction, position, dns);
 		}
 
 		public override void Update()
 		{
-			Rect oldPosition = Position;
+			if (WillDie())
+			{
+				Die();
+				return;
+			}
 
+			Grow();
+
+			System.Diagnostics.Debug.WriteLine("MannaArea: " + Area());
+		}
+
+		private bool WillDie()
+		{
+			return Area() < mDns.StartExtension*mDns.StartExtension;
+		}
+
+		private void Die()
+		{
+			WorldInteraction.RemoveItem(this);
+		}
+
+		private void CanGrow(out bool canLeft, out bool canTop, out bool canRight, out bool canBottom)
+		{
 			var intersectOnTop = false;
 			var intersectOnBottom = false;
 			var intersectOnLeft = false;
 			var intersectOnRight = false;
 
-			var intersects = WorldInteraction.GetIntersectItems(this, typeof(Manna));
-
-			var left = Position.Left;
-			var right = Position.Right;
-			var top = Position.Top;
-			var bottom = Position.Bottom;
-
-			foreach (var intersect in intersects)
+			foreach (var intersect in WorldInteraction.GetIntersectItems(this, typeof(Manna)))
 			{
 				var intLeft = intersect.Position.Left;
 				var intRight = intersect.Position.Right;
 				var intTop = intersect.Position.Top;
 				var intBottom = intersect.Position.Bottom;
 
-				if (top > intTop && top < intBottom)
+				if (Position.Top > intTop && Position.Top < intBottom)
 					intersectOnTop = true;
 
-				if (bottom > intTop && bottom < intBottom)
+				if (Position.Bottom > intTop && Position.Bottom < intBottom)
 					intersectOnBottom = true;
 
-				if (left > intLeft && left < intRight)
+				if (Position.Left > intLeft && Position.Left < intRight)
 					intersectOnLeft = true;
 
-				if (right > intLeft && right < intRight)
+				if (Position.Right > intLeft && Position.Right < intRight)
 					intersectOnRight = true;
 			}
 
-			double widthDiff = Position.Width * mDns.PercentageGrowPerCylce;
-			double heightDiff = Position.Height * mDns.PercentageGrowPerCylce;
+			canLeft = !intersectOnLeft;
+			canTop = !intersectOnTop;
+			canRight = !intersectOnRight;
+			canBottom = !intersectOnBottom;
+		}
 
-			if (!intersectOnTop)
+		private void Grow()
+		{
+			bool canLeft, canTop, canRight, canBottom;
+			CanGrow(out canLeft, out canTop, out canRight, out canBottom);
+
+			double widthDiff = Position.Width * Math.Sqrt(mDns.PercentageGrowPerCylce);
+			double heightDiff = Position.Height * Math.Sqrt(mDns.PercentageGrowPerCylce);
+
+			var left = Position.Left;
+			var top = Position.Top;
+			var right = Position.Right;
+			var bottom = Position.Bottom;
+
+			if (canTop)
 			{
-				top -= heightDiff / 2;
+				top = Math.Max(top - heightDiff / 2, 0.0);
 			}
 
-			if (!intersectOnBottom)
+			if (canBottom)
 			{
-				bottom += heightDiff / 2;
+				bottom = Math.Min(bottom + heightDiff / 2, 1.0);
 			}
 
-			if (!intersectOnLeft)
+			if (canLeft)
 			{
-				left -= widthDiff / 2;
+				left = Math.Max(left - widthDiff / 2, 0.0);
 			}
 
-			if (!intersectOnRight)
+			if (canRight)
 			{
-				right += widthDiff / 2;
+				right = Math.Min(right + widthDiff / 2, 1.0);
 			}
 
 			Position = new Rect(new Point(left, top), new Point(right, bottom));
-
-			if (!PositionOk())
-			{
-				Position = oldPosition;
-			}
-
-			// die when smaller than min area
-			if (Area() < mDns.MinExtension*mDns.MinExtension)
-			{
-				WorldInteraction.RemoveItem(this);
-			}
 		}
 
 		public override void Tell(Message message)
@@ -147,22 +162,6 @@ namespace miaSim.Plants
 		{
 			var brush = Brushes.DarkGreen;
 			context.DrawRectangle(brush, Position);
-		}
-
-		public override bool ChangeSize(double widthDiff, double heightDiff)
-		{
-			var oldPosition = Position;
-
-			if (base.ChangeSize(widthDiff, heightDiff))
-			{
-				if (Position.Width < mDns.MinExtension || Position.Height < mDns.MinExtension)
-				{
-					Position = oldPosition;
-					return false;
-				}
-			}
-
-			return true;
 		}
 
 		#endregion

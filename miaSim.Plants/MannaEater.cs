@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 using miaGame;
@@ -17,7 +19,7 @@ namespace miaSim.Plants
 			MinExtension = 0.01;
 			MaxExtension = 0.1;
 
-			MaxMovement = 0.001;
+			MaxMovement = 0.01;
 		}
 
 		// fix definitions
@@ -68,6 +70,39 @@ namespace miaSim.Plants
 
 		#region ================== Methods ==================================
 
+		public override void Update()
+		{
+			if (WillDie())
+			{
+				Die();
+				return;
+			}
+
+			if (CanReproduce())
+			{
+				Reproduce();
+				return;
+			}
+
+			// Eat
+			List<WorldItemBase> toBeEaten;
+			if (CanEat(out toBeEaten))
+			{
+				Eat(toBeEaten);
+			}
+			else
+			{
+				// shrink, because nothing to eat
+				ChangeSize(-mDns.MinExtension / 10.0, -mDns.MinExtension / 10.0);
+			}
+
+			// Move
+			if (!Move(mMovement.X, mMovement.Y))
+			{
+				CalculateNewMovementDirection();
+			}
+		}
+
 		public static WorldItemBase CreateRandomized(IWorldItemBaseIteraction interaction)
 		{
 			var dns = new MannaEaterDns();
@@ -77,78 +112,63 @@ namespace miaSim.Plants
 			return new MannaEater(interaction, position, movement, dns);
 		}
 
-		public override void Update()
+		private bool CanReproduce()
 		{
-			// smaller than max size
-			if (Position.Width < mDns.MaxExtension && Position.Height < mDns.MaxExtension)
+			return Position.Width >= mDns.MaxExtension && Position.Height >= mDns.MaxExtension;
+		}
+
+		private void Reproduce()
+		{
+			// create 2 children and die
+			var child1 = new MannaEater(WorldInteraction, Position, mMovement, new MannaEaterDns());
+			var child2 = new MannaEater(WorldInteraction, Position, mMovement, new MannaEaterDns());
+
+			child1.CalculateNewMovementDirection();
+			child2.CalculateNewMovementDirection();
+
+			// set to left/upper and right/lower corner
+			child1.Position = new Rect(Position.Location, new Size(Position.Width / 2.0, Position.Height / 2.0));
+			child2.Position = new Rect(Position.Left + Position.Width / 2.0, 
+												Position.Top + Position.Height / 2.0, 
+												Position.Width / 2.0, 
+												Position.Height / 2.0);
+
+			WorldInteraction.AddItem(child1);
+			WorldInteraction.AddItem(child2);
+
+			WorldInteraction.RemoveItem(this);
+		}
+
+		private bool CanEat(out List<WorldItemBase> toBeEaten)
+		{
+			var intersects = WorldInteraction.GetIntersectItems(this, null);
+			toBeEaten = intersects.OfType<Manna>().Cast<WorldItemBase>().ToList();
+			return toBeEaten.Count > 0;
+		}
+
+		private void Eat(IEnumerable<WorldItemBase> toBeEaten)
+		{
+			foreach (var food in toBeEaten)
 			{
-				double area = this.Area();
-
-				// eat
-				var intersects = WorldInteraction.GetIntersectItems(this, null); 
-
-				foreach (var intersect in intersects)
-				{
-					var partTaken = 0.0;
-
-					if (intersect is Manna)
-					{
-						// get % of the manna size
-						partTaken = 15.0 / 100.0;
-					}
-
-					if (intersect is MannaEater)
-					{
-						// only the bigger one can eat the smaller one
-						if (area > intersect.Area())
-						{
-							// cannibalism included
-							partTaken = 5.0 / 100.0;
-						}
-					}
-
-					if (partTaken > 0.0)
-					{
-						MoveArea(intersect, this, partTaken);
-					}
-				}
-
-				// shrink
-				ChangeSize(-0.0001);
-
-				if (Area() <  mDns.MinExtension * mDns.MinExtension)
-				{
-					WorldInteraction.RemoveItem(this);
-				}
-
-				// move
-				if (!Move(mMovement.X, mMovement.Y))
-				{
-					var newMovement = new Vector(SimRandom.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0), SimRandom.NextRandom(-mDns.MaxMovement / 2.0, mDns.MaxMovement / 2.0));
-					mMovement = newMovement;
-				}
-			}
-			else
-			{
-				// create 2 children and die
-				WorldInteraction.AddItem(CreateChild());
-				WorldInteraction.AddItem(CreateChild());
-
-				WorldInteraction.RemoveItem(this);
+				// can eat maximal the min extension
+				MoveArea(food, this, mDns.MinExtension * mDns.MinExtension);
 			}
 		}
 
-		private MannaEater CreateChild()
+		private bool WillDie()
 		{
-			var newItem = CreateRandomized(WorldInteraction) as MannaEater;
-			newItem.Position = Position;
-			newItem.SetSize(mDns.MinExtension, mDns.MinExtension);
+			return Area() < mDns.MinExtension*mDns.MinExtension;
+		}
 
-			double moveLeft = Position.Right - (SimRandom.NextRandom(Position.Left, Position.Right));
-			double moveDown = Position.Bottom - SimRandom.NextRandom(Position.Top, Position.Bottom);
+		private void Die()
+		{
+			WorldInteraction.RemoveItem(this);
+		}
 
-			newItem.Move(moveLeft, moveDown);
-			return newItem;
+		private void CalculateNewMovementDirection()
+		{
+			var newMovement = new Vector(SimRandom.NextRandom(-mDns.MaxMovement/2.0, mDns.MaxMovement/2.0), SimRandom.NextRandom(-mDns.MaxMovement/2.0, mDns.MaxMovement/2.0));
+			mMovement = newMovement;
 		}
 
 		public override void Tell(Message message)

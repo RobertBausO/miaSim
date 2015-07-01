@@ -82,7 +82,7 @@ namespace miaSim.Foundation
 			mWorker.Join();
 		}
 
-		private bool mUseIntersectionMap = true;
+		private bool mUseIntersectionMap = false;
 
 		private void WorkLoop()
 		{
