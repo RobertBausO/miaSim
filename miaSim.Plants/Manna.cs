@@ -161,7 +161,7 @@ namespace miaSim.Plants
 		public override void Draw(PaintContext context)
 		{
 			var brush = Brushes.DarkGreen;
-			context.DrawRectangle(brush, Position);
+			context.DrawRectangle(brush, new Pen(), Position);
 		}
 
 		#endregion

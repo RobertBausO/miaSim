@@ -28,7 +28,7 @@ namespace miaGame
 
 		public void Update()
 		{
-			Dispatcher.BeginInvoke(new Action(InvalidateVisual), DispatcherPriority.Input, null);
+			Dispatcher.BeginInvoke(new Action(InvalidateVisual), DispatcherPriority.ApplicationIdle, null);
 		}
 
 		protected override void OnRender(System.Windows.Media.DrawingContext dc)

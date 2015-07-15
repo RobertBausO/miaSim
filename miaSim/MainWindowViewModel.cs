@@ -19,6 +19,9 @@ namespace miaSim
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private List<Szene> mSzenes;
+		private string mStatisticData;
+		private string mInfoText;
+
 		private readonly GameCanvas mCanvas;
 
 		private double mWorldThrottleInMs;
@@ -45,6 +48,8 @@ namespace miaSim
 			mCanvas = canvas;
 
 			Szenes = Plants.Szenes.GetSzeneList();
+
+			StatisticData = "StatisticData to be displayed ...";
 		}
 
 		#endregion
@@ -99,6 +104,30 @@ namespace miaSim
 		{
 			get { return mNextStepCommand; }
 		}
+
+
+		public string StatisticData
+		{
+			get { return mStatisticData; }
+			set
+			{
+				if (value == mStatisticData) return;
+				mStatisticData = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string InfoText
+		{
+			get { return mInfoText; }
+			set
+			{
+				if (value == mInfoText) return;
+				mInfoText = value;
+				OnPropertyChanged();
+			}
+		}
+		
 
 		#endregion
 
@@ -170,7 +199,8 @@ namespace miaSim
 					text.Append(Environment.NewLine);
 				}
 
-				mWorld.Info = text.ToString();
+				InfoText = text.ToString();
+				//mWorld.Info = text.ToString();
 
 				mCanvas.Update();
 			}

@@ -177,8 +177,9 @@ namespace miaSim.Plants
 
 		public override void Draw(PaintContext context)
 		{
-			var brush = Brushes.Red;
-			context.DrawRectangle(brush, Position);
+			var brush = Brushes.Transparent;
+			var pen = new Pen(Brushes.Red, 1.0);
+			context.DrawRectangle(brush, pen, Position);
 		}
 
 

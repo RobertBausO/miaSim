@@ -5,7 +5,7 @@
 	/// </summary>
 	public partial class MainWindow
 	{
-		private MainWindowViewModel mViewModel;
+		private readonly MainWindowViewModel mViewModel;
 
 		public MainWindow()
 		{

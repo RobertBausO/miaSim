@@ -140,10 +140,10 @@ namespace miaGame
 				World2ScreenXee(sizeXee), World2ScreenYps(sizeYps));
 		}
 
-		public void DrawRectangle(Brush brush, Rect worldRect)
+		public void DrawRectangle(Brush brush, Pen pen, Rect worldRect)
 		{
 			var screenRect = World2Screen(worldRect);
-			Context.DrawRectangle(brush, new Pen(), screenRect);
+			Context.DrawRectangle(brush, pen, screenRect);
 		}
 
 		public void DrawLine(Brush brush, Point a, Point b)

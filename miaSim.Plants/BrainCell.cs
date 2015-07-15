@@ -174,7 +174,7 @@ namespace miaSim.Plants
 		public override void Draw(PaintContext context)
 		{
 			var brush = mIsDocked ? Brushes.Blue : Brushes.Green;
-			context.DrawRectangle(brush, Position);
+			context.DrawRectangle(brush, new Pen(), Position);
 			
 			if (Load > 0)
 			{
